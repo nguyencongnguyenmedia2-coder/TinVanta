@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
 
   return {
     rules: [
@@ -23,10 +23,12 @@ export default function robots(): MetadataRoute.Robots {
           '/chuyen-muc/*',
           '/tin-moi-nhat',
           '/rss.xml',
+          '/sitemap.xml',
         ],
         disallow: [
           '/admin/*',
           '/api/*',
+          '/tai-khoan/*',
         ],
       },
       {
@@ -35,9 +37,20 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/admin/*',
           '/api/*',
+          '/tai-khoan/*',
+        ],
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
+        disallow: [
+          '/admin/*',
+          '/api/*',
+          '/tai-khoan/*',
         ],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

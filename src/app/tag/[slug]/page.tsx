@@ -20,10 +20,22 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   const { slug } = await params;
   const tag = MOCK_TAGS.find(t => t.slug === slug);
   const tagName = tag?.name || slug;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
+  const canonicalUrl = `${siteUrl}/tag/${slug}`;
 
   return {
     title: `Chủ đề: #${tagName} - Tin Mới Nhất`,
     description: `Tổng hợp các bài viết phân tích, tin tức về chủ đề ${tagName} trên Báo điện tử TinVanta.`,
+    keywords: [tagName, `tin tức ${tagName}`, 'TinVanta', 'báo điện tử TinVanta'],
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `Chủ đề: #${tagName} | TinVanta — Tin tức nhanh, thông tin chuẩn`,
+      description: `Tổng hợp các bài viết phân tích, tin tức về chủ đề ${tagName} trên Báo điện tử TinVanta.`,
+      url: canonicalUrl,
+      type: 'website',
+    },
   };
 }
 

@@ -4,7 +4,7 @@ import { getPublishedArticles } from '@/lib/data/articles';
 const STATIC_UTC = 'Thu, 15 Oct 2026 00:00:00 GMT';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
   const { articles } = await getPublishedArticles({ limit: 30 });
 
   const itemsXml = articles

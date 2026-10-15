@@ -46,19 +46,38 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     return { title: 'Không tìm thấy bài viết' };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
   const imageUrl = article.featured_image?.public_url;
   const rawTitle = article.seo_title || article.title;
   const cleanTitle = rawTitle.replace(/\s*\|\s*TinVanta.*$/i, '').trim();
+  const canonicalUrl = `${siteUrl}/bai-viet/${article.slug}`;
+
+  const articleKeywords = [
+    article.title,
+    article.category?.name || 'Tin tức',
+    ...(article.tags?.map(t => t.name) || []),
+    'TinVanta',
+    'báo TinVanta',
+    'tin tức 24h',
+    'tin mới nhất',
+  ];
 
   return {
     title: cleanTitle,
     description: article.seo_description || article.sapo,
+    keywords: articleKeywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: cleanTitle,
       description: article.sapo,
       type: 'article',
+      url: canonicalUrl,
       publishedTime: article.published_at || undefined,
       modifiedTime: article.updated_at || undefined,
+      section: article.category?.name || 'Thời sự',
+      tags: article.tags?.map(t => t.name) || [],
       authors: [article.author?.full_name || 'Báo điện tử TinVanta'],
       images: imageUrl ? [{ url: imageUrl, alt: article.title }] : undefined,
     },
@@ -67,6 +86,17 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       title: cleanTitle,
       description: article.sapo,
       images: imageUrl ? [imageUrl] : undefined,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+      },
     },
   };
 }
@@ -139,31 +169,65 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     ? allArticlesRes.articles[currentIndex + 1]
     : null;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
+
   // Structured Data (JSON-LD) for Google SEO NewsArticle
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/bai-viet/${article.slug}`,
+    },
     headline: article.title,
     description: article.sapo,
-    image: article.featured_image?.public_url ? [article.featured_image.public_url] : [],
-    datePublished: article.published_at,
-    dateModified: article.updated_at,
+    image: article.featured_image?.public_url ? [article.featured_image.public_url] : [`${siteUrl}/logo-tinvanta.png`],
+    datePublished: article.published_at || new Date().toISOString(),
+    dateModified: article.updated_at || article.published_at || new Date().toISOString(),
+    articleSection: article.category?.name || 'Thời sự',
+    keywords: [article.category?.name || 'Tin tức', ...(article.tags?.map(t => t.name) || []), 'TinVanta'].join(', '),
     author: [{
       '@type': 'Person',
       name: article.author?.full_name || 'Ban Biên Tập TinVanta',
-      url: `/tac-gia/${article.author?.slug || 'toa-soan'}`
+      url: `${siteUrl}/tac-gia/${article.author?.slug || 'toa-soan'}`
     }],
     publisher: {
       '@type': 'NewsMediaOrganization',
       name: 'TinVanta',
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vn',
+      url: siteUrl,
       logo: {
         '@type': 'ImageObject',
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vn'}/logo-tinvanta-v2.png`,
+        url: `${siteUrl}/logo-tinvanta.png`,
         width: 1024,
         height: 341
       }
     }
+  };
+
+  // Google BreadcrumbList Schema
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Trang chủ',
+        item: siteUrl,
+      },
+      ...(article.category ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: article.category.name,
+        item: `${siteUrl}/chuyen-muc/${article.category.slug}`,
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: article.category ? 3 : 2,
+        name: article.title,
+        item: `${siteUrl}/bai-viet/${article.slug}`,
+      },
+    ],
   };
 
   return (
@@ -175,6 +239,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="space-y-6 pb-16">

@@ -23,9 +23,21 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
   const author = MOCK_AUTHORS.find(a => a.slug === slug);
   if (!author) return { title: 'Không tìm thấy tác giả' };
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
+  const canonicalUrl = `${siteUrl}/tac-gia/${author.slug}`;
+
   return {
     title: `${author.full_name} - Tác Giả & Phóng Viên`,
     description: author.bio || `Hồ sơ tác giả ${author.full_name} tại Báo điện tử TinVanta`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${author.full_name} - Tác Giả & Phóng Viên TinVanta`,
+      description: author.bio || '',
+      url: canonicalUrl,
+      images: author.avatar_url ? [{ url: author.avatar_url, alt: author.full_name }] : undefined,
+    },
   };
 }
 

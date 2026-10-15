@@ -29,12 +29,31 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     return { title: 'Không tìm thấy chuyên mục' };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
+  const canonicalUrl = `${siteUrl}/chuyen-muc/${category.slug}`;
+
   return {
     title: `${category.name} - Tin Tức Mới Nhất 24/7`,
     description: category.description || `Cập nhật tin tức sự kiện chuyên mục ${category.name} nhanh chóng, chính xác trên TinVanta.`,
+    keywords: [category.name, `tin tức ${category.name.toLowerCase()}`, `${category.name.toLowerCase()} 24h`, 'TinVanta', 'báo điện tử TinVanta'],
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${category.name} | TinVanta — Tin tức nhanh, thông tin chuẩn`,
       description: category.description || '',
+      url: canonicalUrl,
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }

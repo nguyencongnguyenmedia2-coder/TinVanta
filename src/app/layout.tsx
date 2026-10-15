@@ -9,26 +9,35 @@ import { BottomNavigation } from '@/components/layout/BottomNavigation';
 import { MainContentWrapper } from '@/components/layout/MainContentWrapper';
 import { Suspense } from 'react';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tinvanta.vercel.app';
 
 export const metadata: Metadata = {
   title: {
     template: '%s | TinVanta — Tin tức nhanh, thông tin chuẩn',
     default: 'TinVanta - Báo Điện Tử Tin Tức Hàng Đầu 24/7 | Tin Nhanh & Chuẩn Xác',
   },
-  description: 'TinVanta - Nền tảng báo điện tử tin tức chính luận, kinh tế, công nghệ và đời sống xã hội hàng đầu Việt Nam. Cập nhật liên tục 24/7 với tôn chỉ: Tin tức nhanh - Thông tin chuẩn.',
+  description: 'TinVanta - Báo điện tử tin tức chính luận, thời sự, kinh tế, công nghệ bán dẫn, trí tuệ nhân tạo AI và đời sống 24/7. Cung cấp thông tin chuẩn xác, kiểm chứng độc lập, phân tích đa chiều số 1 Việt Nam.',
   keywords: [
     'TinVanta',
-    'tin tức',
-    'báo điện tử',
+    'tinvanta',
+    'báo TinVanta',
+    'báo điện tử TinVanta',
+    'tin tức TinVanta',
+    'tinvanta.vercel.app',
+    'tin tức 24h',
     'tin nhanh',
-    'thông tin chuẩn',
-    'thời sự 24h',
-    'kinh tế việt nam',
+    'tin tức hôm nay',
+    'tin nóng 24h',
+    'thời sự việt nam',
+    'tin kinh tế',
+    'chứng khoán tài chính',
     'công nghệ bán dẫn',
     'trí tuệ nhân tạo',
-    'thị trường tài chính',
-    'đời sống xã hội'
+    'tin tức AI',
+    'đời sống xã hội',
+    'chuyển đổi số',
+    'báo điện tử uy tín',
+    'tin tức mới nhất'
   ],
   authors: [{ name: 'Ban Biên Tập TinVanta', url: `${SITE_URL}/gioi-thieu` }],
   creator: 'TinVanta Editorial Team',
@@ -43,23 +52,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'vi_VN',
-    url: '/',
+    url: SITE_URL,
     siteName: 'TinVanta',
     title: 'TinVanta - Báo Điện Tử Tin Tức Hàng Đầu 24/7 | Tin Nhanh & Chuẩn Xác',
-    description: 'Cập nhật liên tục tin tức thời sự, kinh tế, công nghệ, xã hội, thể thao nhanh chóng và chuẩn xác nhất tại Việt Nam.',
+    description: 'Cập nhật liên tục tin tức thời sự, kinh tế, công nghệ AI, bán dẫn, xã hội, quốc tế nhanh chóng và chuẩn xác nhất tại Việt Nam.',
     images: [
       {
         url: '/logo-tinvanta.png',
         width: 1024,
         height: 341,
-        alt: 'TinVanta — Tin tức nhanh, thông tin chuẩn',
+        alt: 'TinVanta — Báo điện tử tin tức nhanh, thông tin chuẩn',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'TinVanta - Tin Tức Nhanh, Thông Tin Chuẩn',
-    description: 'Báo điện tử tin tức tổng hợp 24/7 hàng đầu Việt Nam.',
+    description: 'Báo điện tử tin tức tổng hợp thời sự, kinh tế, công nghệ AI 24/7 hàng đầu Việt Nam.',
     images: ['/logo-tinvanta.png'],
   },
   robots: {
@@ -78,6 +87,14 @@ export const metadata: Metadata = {
     shortcut: '/logo-tinvanta.png',
     apple: '/logo-tinvanta.png',
   },
+  verification: {
+    google: 'google65e91d408d51fefb',
+    other: {
+      'google-site-verification': ['google65e91d408d51fefb', 'google65e91d408d51fefb.html'],
+    },
+  },
+  category: 'news',
+  classification: 'Báo điện tử tin tức tổng hợp 24/7',
 };
 
 export default async function RootLayout({
@@ -138,6 +155,8 @@ export default async function RootLayout({
   return (
     <html lang="vi" className="h-full antialiased scroll-smooth">
       <head>
+        <meta name="google-site-verification" content="google65e91d408d51fefb" />
+        <meta name="google-site-verification" content="google65e91d408d51fefb.html" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
