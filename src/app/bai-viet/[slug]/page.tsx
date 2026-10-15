@@ -199,6 +199,33 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <span className="text-gray-400 truncate max-w-sm sm:max-w-md">{article.title}</span>
         </nav>
 
+        {/* 2.1 BANNER XEM TRƯỚC BÀI VIẾT CHỜ DUYỆT */}
+        {article.status !== 'published' && (
+          <div className="bg-amber-50 border border-amber-300 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900 shadow-xs animate-in fade-in">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-3 w-3 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+              </span>
+              <div>
+                <div className="text-xs font-black uppercase tracking-wider text-amber-800">
+                  Chế độ xem trước nội bộ (Chờ duyệt)
+                </div>
+                <p className="text-[11px] text-amber-700 m-0">
+                  Bài viết này chưa công khai trên trang chủ. Bạn đang xem với tư cách Biên tập viên / Quản trị viên.
+                </p>
+              </div>
+            </div>
+            <Link 
+              href={`/admin/bai-viet`}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs transition-colors shrink-0"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Duyệt xuất bản ngay</span>
+            </Link>
+          </div>
+        )}
+
         {/* 3. MAIN ARTICLE WRAPPER WITH DOCKED ACTION BAR */}
         <div className="relative">
           {/* FLOATING ACTION TOOLBAR (DESKTOP & MOBILE DOCK) */}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { 
   getAllCombinedArticles, 
   saveArticleToDisk, 
@@ -149,6 +150,13 @@ export async function POST(request: NextRequest) {
 
     saveArticleToDisk(newArticle);
 
+    try {
+      revalidatePath('/', 'page');
+      revalidatePath('/chuyen-muc/[slug]', 'page');
+      revalidatePath('/tin-moi-nhat', 'page');
+      revalidatePath('/admin/bai-viet', 'page');
+    } catch {}
+
     return NextResponse.json({
       success: true,
       message: 'Tạo bài viết thành công!',
@@ -216,6 +224,15 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Không tìm thấy bài viết để cập nhật.' }, { status: 404 });
     }
 
+    try {
+      revalidatePath('/', 'page');
+      revalidatePath('/chuyen-muc/[slug]', 'page');
+      revalidatePath('/bai-viet/[slug]', 'page');
+      revalidatePath('/tin-moi-nhat', 'page');
+      revalidatePath('/admin/bai-viet', 'page');
+      revalidatePath('/admin/tu-dong-viet-bai', 'page');
+    } catch {}
+
     return NextResponse.json({
       success: true,
       message: 'Cập nhật bài viết thành công!',
@@ -257,6 +274,15 @@ export async function DELETE(request: NextRequest) {
         });
       }
     }
+
+    try {
+      revalidatePath('/', 'page');
+      revalidatePath('/chuyen-muc/[slug]', 'page');
+      revalidatePath('/bai-viet/[slug]', 'page');
+      revalidatePath('/tin-moi-nhat', 'page');
+      revalidatePath('/admin/bai-viet', 'page');
+      revalidatePath('/admin/tu-dong-viet-bai', 'page');
+    } catch {}
 
     return NextResponse.json({
       success: true,

@@ -6,7 +6,7 @@ import {
   MOCK_SITE_SETTINGS, 
   MOCK_AD_CREATIVES 
 } from './mock-data';
-import { getStoredArticles } from './article-store';
+import { getStoredArticles, getAllCombinedArticles } from './article-store';
 
 // Hàm kiểm tra xem Supabase credentials có hợp lệ hay đang ở chế độ mock/placeholder
 function isSupabaseConfigured(): boolean {
@@ -60,8 +60,20 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  if (!slug) return null;
+  let clean = String(slug).trim();
+  try {
+    clean = decodeURIComponent(clean).toLowerCase();
+  } catch {
+    clean = clean.toLowerCase();
+  }
+
   const categories = await getCategories();
-  return categories.find(c => c.slug === slug) || null;
+  return categories.find(c => 
+    c.slug.toLowerCase() === clean || 
+    c.id.toLowerCase() === clean ||
+    c.name.toLowerCase() === clean
+  ) || null;
 }
 
 export async function getPublishedArticles(options: {
@@ -91,31 +103,11 @@ export async function getPublishedArticles(options: {
     orderAsc = false,
   } = options;
 
-  // Lấy các bài viết từ ổ đĩa (các bài AI tự động tạo) và Mock Articles
-  const diskArticles = getStoredArticles();
-  const basePool: Article[] = [];
-  const seenIds = new Set<string>();
-  const seenSlugs = new Set<string>();
+  // Lấy toàn bộ bài viết hợp nhất (ưu tiên đĩa mới nhất + mock data được chuẩn hóa)
+  const basePool: Article[] = getAllCombinedArticles();
+  const seenSlugs = new Set<string>(basePool.map(a => a.slug));
 
-  // 1. Ưu tiên bài mới nhất từ ổ đĩa
-  for (const art of diskArticles) {
-    if (art && art.slug && !seenSlugs.has(art.slug)) {
-      seenIds.add(art.id);
-      seenSlugs.add(art.slug);
-      basePool.push(art);
-    }
-  }
-
-  // 2. Thêm bài từ MOCK_ARTICLES
-  for (const art of MOCK_ARTICLES) {
-    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
-      seenIds.add(art.id);
-      seenSlugs.add(art.slug);
-      basePool.push(art);
-    }
-  }
-
-  // 3. Nếu Supabase cấu hình, truy vấn thêm từ database
+  // Nếu Supabase cấu hình thực tế, bổ sung thêm bài viết từ cơ sở dữ liệu
   if (isSupabaseConfigured()) {
     try {
       const supabase = getPublicSupabase();
@@ -151,21 +143,52 @@ export async function getPublishedArticles(options: {
     }
   }
 
-  // 4. Lọc và phân trang trên danh sách tổng hợp
+  // 1. Lọc theo trạng thái xuất bản
   let list = basePool.filter(a => a.status === 'published');
 
+  // 2. Loại trừ ID (nếu có yêu cầu, ví dụ bài hiện tại ở chi tiết)
   if (excludeId) {
     list = list.filter(a => a.id !== excludeId);
   }
 
+  // 3. Lọc theo chuyên mục linh hoạt (hỗ trợ cả slug, id UUID và tiếng Việt có dấu/không dấu)
   if (categorySlug) {
-    list = list.filter(a => a.category?.slug === categorySlug || a.primary_category_id === categorySlug);
+    let catTarget = String(categorySlug).trim();
+    try {
+      catTarget = decodeURIComponent(catTarget).toLowerCase();
+    } catch {
+      catTarget = catTarget.toLowerCase();
+    }
+
+    const foundCat = MOCK_CATEGORIES.find(c => 
+      c.slug.toLowerCase() === catTarget || 
+      c.id.toLowerCase() === catTarget || 
+      c.name.toLowerCase() === catTarget
+    );
+
+    const validKeys = new Set<string>([catTarget]);
+    if (foundCat) {
+      validKeys.add(foundCat.slug.toLowerCase());
+      validKeys.add(foundCat.id.toLowerCase());
+    }
+
+    list = list.filter(a => {
+      const aCatSlug = (a.category?.slug || '').toLowerCase();
+      const aCatId = (a.category?.id || a.primary_category_id || '').toLowerCase();
+      return (
+        validKeys.has(aCatSlug) || 
+        validKeys.has(aCatId)
+      );
+    });
   }
 
+  // 4. Lọc theo tag
   if (tagSlug) {
-    list = list.filter(a => a.tags?.some(t => t.slug === tagSlug));
+    const cleanTag = tagSlug.toLowerCase();
+    list = list.filter(a => a.tags?.some(t => t.slug.toLowerCase() === cleanTag || t.name.toLowerCase() === cleanTag));
   }
 
+  // 5. Lọc theo tác giả
   if (authorSlug) {
     list = list.filter(a => a.author?.slug === authorSlug);
   }
@@ -174,24 +197,27 @@ export async function getPublishedArticles(options: {
     list = list.filter(a => a.author?.id === authorId || a.created_by === authorId);
   }
 
+  // 6. Lọc bài tiêu điểm
   if (featuredOnly) {
     list = list.filter(a => a.is_featured);
   }
 
+  // 7. Tìm kiếm từ khóa
   if (searchQuery) {
-    const q = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase().trim();
     list = list.filter(a => 
       a.title.toLowerCase().includes(q) || 
       a.sapo.toLowerCase().includes(q)
     );
   }
 
+  // 8. Sắp xếp thứ tự
   if (orderBy === 'view_count') {
     list.sort((a, b) => (orderAsc ? a.view_count - b.view_count : b.view_count - a.view_count));
   } else {
     list.sort((a, b) => {
-      const timeA = new Date(a.published_at || a.created_at).getTime();
-      const timeB = new Date(b.published_at || b.created_at).getTime();
+      const timeA = new Date(a.published_at || a.created_at || 0).getTime();
+      const timeB = new Date(b.published_at || b.created_at || 0).getTime();
       return orderAsc ? timeA - timeB : timeB - timeA;
     });
   }
@@ -202,16 +228,44 @@ export async function getPublishedArticles(options: {
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  // 1. Kiểm tra trong bộ nhớ đĩa trước
-  const diskArticles = getStoredArticles();
-  const fromDisk = diskArticles.find(a => a.slug === slug);
-  if (fromDisk) return fromDisk;
+  if (!slug) return null;
+  const raw = String(slug).trim();
+  let decoded = raw;
+  try {
+    decoded = decodeURIComponent(raw).trim();
+  } catch {}
+  const lowerRaw = raw.toLowerCase();
+  const lowerDecoded = decoded.toLowerCase();
 
-  // 2. Kiểm tra trong Mock Articles
-  const fromMock = MOCK_ARTICLES.find(a => a.slug === slug);
-  if (fromMock) return fromMock;
+  // 1. Kiểm tra trong kho bài viết tổng hợp (Store đĩa + In-memory mock articles)
+  const allArticles = getAllCombinedArticles();
 
-  // 3. Nếu cấu hình Supabase, tìm trong Supabase
+  // 1.1 Khớp chính xác tuyệt đối theo slug
+  let found = allArticles.find(a => a.slug === raw || a.slug === decoded);
+  if (found) return found;
+
+  // 1.2 Khớp không phân biệt hoa thường theo slug
+  found = allArticles.find(a => 
+    a.slug && (a.slug.toLowerCase() === lowerRaw || a.slug.toLowerCase() === lowerDecoded)
+  );
+  if (found) return found;
+
+  // 1.3 Khớp theo ID bài viết (phòng khi người dùng hoặc link truy cập bằng ID)
+  found = allArticles.find(a => 
+    a.id === raw || 
+    (a.id && (a.id.toLowerCase() === lowerRaw || a.id.toLowerCase() === lowerDecoded))
+  );
+  if (found) return found;
+
+  // 1.4 Khớp tiền tố hoặc hậu tố (phòng trường hợp URL bị cắt đuôi ID)
+  found = allArticles.find(a => {
+    if (!a.slug) return false;
+    const s = a.slug.toLowerCase();
+    return (s.length > 10 && (s.startsWith(lowerDecoded) || lowerDecoded.startsWith(s)));
+  });
+  if (found) return found;
+
+  // 2. Nếu có cấu hình Supabase, tìm trong Supabase
   if (isSupabaseConfigured()) {
     try {
       const supabase = getPublicSupabase();
@@ -223,8 +277,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
           featured_image:media_assets(*),
           author:profiles(*)
         `)
-        .eq('slug', slug)
-        .eq('status', 'published')
+        .or(`slug.eq.${raw},slug.eq.${decoded},id.eq.${raw}`)
         .single();
 
       if (!error && data) {

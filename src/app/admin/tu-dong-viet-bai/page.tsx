@@ -226,13 +226,22 @@ export default function AutoPublishAdminPage() {
       }
 
       // Cập nhật trạng thái trong danh sách bài vừa tạo
-      setGeneratedArticles(prev => prev.map(art => 
-        (art.id === articleId || art.slug === articleId) 
-          ? { ...art, status: 'published' as const } 
-          : art
-      ));
+      if (data.article) {
+        setGeneratedArticles(prev => prev.map(art => 
+          (art.id === articleId || art.slug === articleId) 
+            ? data.article 
+            : art
+        ));
+      } else {
+        setGeneratedArticles(prev => prev.map(art => 
+          (art.id === articleId || art.slug === articleId) 
+            ? { ...art, status: 'published' as const } 
+            : art
+        ));
+      }
 
-      setSuccessMessage(`Đã đăng bài viết lên trang chủ thành công!`);
+      loadHistory();
+      setSuccessMessage(`Đã duyệt và đăng bài viết trực tiếp lên trang chủ thành công!`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Lỗi xuất bản bài viết';
       setErrorMessage(msg);

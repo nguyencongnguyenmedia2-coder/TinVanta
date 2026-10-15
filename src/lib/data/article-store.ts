@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Article } from '@/types/database';
+import { MOCK_ARTICLES, MOCK_CATEGORIES, addDynamicArticle } from './mock-data';
 
 function getStoragePath(): string {
   // Trên Vercel Serverless, thư mục duy nhất có quyền ghi là /tmp
@@ -68,6 +69,13 @@ export function saveArticleToDisk(article: Article): void {
     }
 
     fs.writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf-8');
+
+    // Đồng bộ ngay lập tức vào in-memory MOCK_ARTICLES
+    try {
+      addDynamicArticle(article);
+    } catch {
+      // Ignored
+    }
   } catch (error) {
     console.error('Lỗi ghi articles-store.json:', error);
   }
@@ -83,13 +91,46 @@ export function updateArticleInStore(
   try {
     const filePath = getStoragePath();
     const list = getStoredArticles();
-    const index = list.findIndex(a => a.id === articleIdOrSlug || a.slug === articleIdOrSlug);
+    const targetKey = (articleIdOrSlug || '').trim().toLowerCase();
+    
+    let index = list.findIndex(a => 
+      a.id === articleIdOrSlug || 
+      a.slug === articleIdOrSlug ||
+      (a.id && a.id.toLowerCase() === targetKey) ||
+      (a.slug && a.slug.toLowerCase() === targetKey)
+    );
+
+    // Nếu bài viết chưa có trong file đĩa, tìm kiếm trong MOCK_ARTICLES
+    if (index === -1) {
+      try {
+        const mockArticle = MOCK_ARTICLES.find((a: Article) => 
+          a.id === articleIdOrSlug || 
+          a.slug === articleIdOrSlug ||
+          (a.id && a.id.toLowerCase() === targetKey) ||
+          (a.slug && a.slug.toLowerCase() === targetKey)
+        );
+        if (mockArticle) {
+          list.unshift({ ...mockArticle });
+          index = 0;
+        }
+      } catch {
+        // Ignored
+      }
+    }
     
     if (index === -1) return null;
 
+    // Tự động gán thời điểm xuất bản nếu chuyển sang 'published'
+    const finalUpdates: Partial<Article> = { ...updates };
+    if (finalUpdates.status === 'published') {
+      if (!finalUpdates.published_at && !list[index].published_at) {
+        finalUpdates.published_at = new Date().toISOString();
+      }
+    }
+
     list[index] = {
       ...list[index],
-      ...updates,
+      ...finalUpdates,
       updated_at: new Date().toISOString(),
     };
 
@@ -99,6 +140,14 @@ export function updateArticleInStore(
     }
 
     fs.writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf-8');
+
+    // Đồng bộ ngay lập tức vào in-memory MOCK_ARTICLES
+    try {
+      addDynamicArticle(list[index]);
+    } catch {
+      // Ignored
+    }
+
     return list[index];
   } catch (error) {
     console.error('Lỗi cập nhật articles-store.json:', error);
@@ -113,10 +162,15 @@ export function deleteArticleFromStore(articleIdOrSlug: string): boolean {
   try {
     const filePath = getStoragePath();
     const list = getStoredArticles();
-    const filtered = list.filter(a => a.id !== articleIdOrSlug && a.slug !== articleIdOrSlug);
+    const targetKey = (articleIdOrSlug || '').trim().toLowerCase();
+    const filtered = list.filter(a => 
+      a.id !== articleIdOrSlug && 
+      a.slug !== articleIdOrSlug &&
+      a.id.toLowerCase() !== targetKey &&
+      a.slug.toLowerCase() !== targetKey
+    );
     
     if (filtered.length === list.length) {
-      // Nếu không tìm thấy trong store (có thể là mock article), lưu một bản đánh dấu xóa hoặc return true
       return false;
     }
 
@@ -139,31 +193,44 @@ export function deleteArticleFromStore(articleIdOrSlug: string): boolean {
  */
 export function getAllCombinedArticles(): Article[] {
   const diskArticles = getStoredArticles();
-  const { MOCK_ARTICLES } = require('./mock-data');
 
   const combined: Article[] = [];
   const seenIds = new Set<string>();
   const seenSlugs = new Set<string>();
 
-  // Ưu tiên bài trong store đĩa (các bài do AI cào hoặc do người dùng tạo/sửa)
+  // Chuẩn hóa một bài viết để luôn có category object chuẩn
+  const normalizeArticle = (art: Article): Article => {
+    if (!art.category && art.primary_category_id) {
+      const found = MOCK_CATEGORIES.find((c: any) => 
+        c.id === art.primary_category_id || 
+        c.slug === art.primary_category_id
+      );
+      if (found) {
+        return { ...art, category: found };
+      }
+    }
+    return art;
+  };
+
+  // 1. Ưu tiên bài trong store đĩa (các bài do AI cào hoặc do người dùng tạo/sửa/duyệt)
   for (const art of diskArticles) {
-    if (art && art.slug && !seenSlugs.has(art.slug)) {
+    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
       seenIds.add(art.id);
       seenSlugs.add(art.slug);
-      combined.push(art);
+      combined.push(normalizeArticle(art));
     }
   }
 
-  // Bổ sung các bài từ MOCK_ARTICLES nếu chưa có trong store
+  // 2. Bổ sung các bài từ MOCK_ARTICLES nếu chưa có trong store
   for (const art of MOCK_ARTICLES) {
     if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
       seenIds.add(art.id);
       seenSlugs.add(art.slug);
-      combined.push(art);
+      combined.push(normalizeArticle(art));
     }
   }
 
-  // Sắp xếp thời gian mới nhất lên đầu
+  // 3. Sắp xếp thời gian xuất bản / tạo mới nhất lên đầu
   combined.sort((a, b) => {
     const timeA = new Date(a.published_at || a.created_at || 0).getTime();
     const timeB = new Date(b.published_at || b.created_at || 0).getTime();

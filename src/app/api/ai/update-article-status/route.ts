@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { updateArticleInStore } from '@/lib/data/article-store';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -16,14 +17,17 @@ export async function POST(request: Request) {
     const updates: Record<string, unknown> = {};
     if (status) {
       updates.status = status;
+      if (status === 'published') {
+        updates.published_at = publishedAt ? new Date(publishedAt).toISOString() : new Date().toISOString();
+      }
     }
     if (publishedAt) {
-      updates.published_at = publishedAt;
+      updates.published_at = new Date(publishedAt).toISOString();
     }
 
     const updatedArticle = updateArticleInStore(articleId, updates);
 
-    // Cập nhật Supabase nếu có
+    // Cập nhật Supabase nếu có cấu hình
     try {
       const supabase = createAdminClient();
       await supabase
@@ -41,11 +45,23 @@ export async function POST(request: Request) {
       }, { status: 404 });
     }
 
+    // Làm mới cache tức thì cho trang chủ, chuyên mục, chi tiết và admin
+    try {
+      revalidatePath('/', 'page');
+      revalidatePath('/chuyen-muc/[slug]', 'page');
+      revalidatePath('/bai-viet/[slug]', 'page');
+      revalidatePath('/tin-moi-nhat', 'page');
+      revalidatePath('/admin/bai-viet', 'page');
+      revalidatePath('/admin/tu-dong-viet-bai', 'page');
+    } catch {
+      // Ignored
+    }
+
     return NextResponse.json({
       success: true,
       article: updatedArticle,
       message: status === 'published' 
-        ? 'Bài viết đã được đăng trực tiếp lên trang chủ thành công!' 
+        ? 'Bài viết đã được duyệt và đăng trực tiếp lên trang chủ thành công!' 
         : 'Đã cập nhật trạng thái và thời gian bài viết thành công!',
     });
   } catch (error: unknown) {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { crawlRewriteAndPublish } from '@/lib/crawler/auto-news-service';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,17 @@ export async function POST(request: Request) {
       batchCount: Number(batchCount) || 1,
       customPublishedAt,
     });
+
+    // Làm mới cache tức thì cho trang chủ, chuyên mục, bài mới nhất và admin
+    try {
+      revalidatePath('/', 'page');
+      revalidatePath('/chuyen-muc/[slug]', 'page');
+      revalidatePath('/bai-viet/[slug]', 'page');
+      revalidatePath('/tin-moi-nhat', 'page');
+      revalidatePath('/admin/bai-viet', 'page');
+    } catch {
+      // Ignored
+    }
 
     return NextResponse.json({
       success: true,
