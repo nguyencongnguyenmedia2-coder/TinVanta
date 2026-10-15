@@ -16,6 +16,67 @@ export default function AdminSettingsPage() {
   const [healthLoading, setHealthLoading] = useState(false);
   const [healthData, setHealthData] = useState<any>(null);
 
+  // Quản lý tài khoản Admin thật
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newEmail, setNewEmail] = useState('admin@tinvanta.vn');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState('');
+  const [authError, setAuthError] = useState('');
+
+  const handleUpdateAdminAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+
+    if (!currentPassword) {
+      setAuthError('Vui lòng nhập mật khẩu hiện tại để xác thực an toàn.');
+      return;
+    }
+
+    if (newPassword && newPassword.length < 8) {
+      setAuthError('Mật khẩu mới phải có ít nhất 8 ký tự.');
+      return;
+    }
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setAuthError('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+      return;
+    }
+
+    setAuthLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/change-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword,
+          newEmail: newEmail.trim() || undefined,
+          newPassword: newPassword.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setAuthError(data.error || 'Cập nhật thất bại. Vui lòng kiểm tra lại mật khẩu hiện tại.');
+        setAuthLoading(false);
+        return;
+      }
+
+      setAuthSuccess('Đã cập nhật tài khoản quản trị thành công! Mật khẩu mới có hiệu lực ngay lập tức.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setAuthLoading(false);
+    } catch (err: any) {
+      setAuthError('Lỗi kết nối máy chủ khi cập nhật tài khoản.');
+      setAuthLoading(false);
+    }
+  };
+
   const handleCheckHealth = async () => {
     setHealthLoading(true);
     try {
@@ -40,10 +101,10 @@ export default function AdminSettingsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-2xs">
         <div>
           <h1 className="text-xl font-black text-[#172033]">
-            Cấu Hình Hệ Thống & Nhận Diện Thương Hiệu
+            Cấu Hình Hệ Thống & Bảo Mật Quản Trị
           </h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Tùy biến tên thương hiệu, đường dây nóng, màu sắc chủ đạo và thanh tin nóng thời sự.
+            Quản lý tài khoản Admin tối cao, thông số thương hiệu tòa soạn và hạ tầng vận hành.
           </p>
         </div>
 
@@ -55,6 +116,107 @@ export default function AdminSettingsPage() {
           <Save className="w-4 h-4" />
           Lưu cấu hình
         </button>
+      </div>
+
+      {/* SECTION BẢO MẬT ADMIN ĐỘC QUYỀN */}
+      <div className="bg-white p-6 rounded-xl border border-red-200/80 shadow-2xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+          <div className="p-2 bg-red-50 text-[#D71920] rounded-lg">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">
+              Tài Khoản Quản Trị Viên Tối Cao (Độc Quyền CMS)
+            </h2>
+            <p className="text-xs text-gray-500">
+              Chỉ tài khoản này mới có quyền đăng nhập và toàn quyền quản trị hệ thống CMS TinVanta.
+            </p>
+          </div>
+        </div>
+
+        {authSuccess && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{authSuccess}</span>
+          </div>
+        )}
+
+        {authError && (
+          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs">
+            {authError}
+          </div>
+        )}
+
+        <form onSubmit={handleUpdateAdminAuth} className="space-y-4 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Email quản trị viên (Admin)
+              </label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#D71920] focus:outline-none"
+              />
+              <span className="text-[10px] text-gray-400 mt-0.5 block">Dùng để đăng nhập vào CMS</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Mật khẩu hiện tại <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Nhập mật khẩu đang dùng để xác nhận..."
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#D71920] focus:outline-none"
+              />
+              <span className="text-[10px] text-gray-400 mt-0.5 block">Bắt buộc phải nhập để xác thực bảo mật</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Mật khẩu mới (bỏ trống nếu không muốn đổi)
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Nhập mật khẩu mới (tối thiểu 8 ký tự)..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#D71920] focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Xác nhận lại mật khẩu mới
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Nhập lại mật khẩu mới..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#D71920] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end pt-2">
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="bg-gray-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+            >
+              <span>{authLoading ? 'Đang cập nhật...' : 'Cập nhật tài khoản Admin'}</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {saved && (

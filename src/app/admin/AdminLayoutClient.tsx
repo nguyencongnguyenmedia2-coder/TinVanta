@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -21,7 +21,9 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Lock,
+  Loader2
 } from 'lucide-react';
 
 interface AdminLayoutClientProps {
@@ -30,7 +32,60 @@ interface AdminLayoutClientProps {
 
 function AdminLayoutInner({ children }: AdminLayoutClientProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [adminUser, setAdminUser] = useState<{ email?: string; role?: string } | null>(null);
+
+  // AUTH GUARD: Bảo vệ toàn bộ khu vực CMS /admin
+  useEffect(() => {
+    let isMounted = true;
+
+    async function verifyAuth() {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('tinvanta_admin_session') : null;
+        
+        const res = await fetch('/api/auth/me', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: 'no-store',
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.authenticated) {
+          if (isMounted) {
+            router.replace(`/tai-khoan/dang-nhap?redirect=${encodeURIComponent(pathname)}`);
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setAdminUser(data.admin || { email: 'admin@tinvanta.vn', role: 'super_admin' });
+          setCheckingAuth(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          router.replace(`/tai-khoan/dang-nhap?redirect=${encodeURIComponent(pathname)}`);
+        }
+      }
+    }
+
+    verifyAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, router]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    try {
+      localStorage.removeItem('tinvanta_admin_session');
+    } catch {}
+    router.replace('/tai-khoan/dang-nhap');
+  };
 
   const navigation = [
     { name: 'Tổng quan', href: '/admin', icon: LayoutDashboard },
@@ -43,9 +98,34 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
     { name: 'Bình luận & Độc giả', href: '/admin/binh-luan', icon: MessageSquare },
     { name: 'Newsletter Bản tin', href: '/admin/newsletter', icon: Mail },
     { name: 'Nhân sự & Phân quyền', href: '/admin/nguoi-dung', icon: Users },
-    { name: 'Cấu hình hệ thống', href: '/admin/cau-hinh', icon: Settings },
+    { name: 'Cấu hình hệ thống & Bảo mật', href: '/admin/cau-hinh', icon: Settings },
     { name: 'Nhật ký Audit Logs', href: '/admin/nhat-ky', icon: History },
   ];
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4 text-white">
+        <div className="p-8 bg-gray-800/80 backdrop-blur-md rounded-2xl border border-gray-700 max-w-sm w-full text-center space-y-4 shadow-2xl">
+          <div className="relative h-12 w-44 mx-auto bg-white/95 px-3 py-1 rounded-lg">
+            <Image
+              src="/logo-tinvanta-v2.png"
+              alt="TinVanta CMS"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <div className="flex items-center justify-center gap-2 text-red-500 font-semibold text-xs tracking-wider uppercase">
+            <Lock className="w-4 h-4" />
+            <span>Khu vực Quản Trị Độc Quyền</span>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-gray-300 text-sm">
+            <Loader2 className="w-4 h-4 animate-spin text-red-500" />
+            <span>Đang xác thực thông tin Admin...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -90,8 +170,10 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
               AD
             </div>
             <div className="hidden sm:block text-left">
-              <p className="font-semibold text-gray-200">Admin Quản Trị</p>
-              <p className="text-[10px] text-amber-400 font-medium">Super Admin</p>
+              <p className="font-semibold text-gray-200">
+                {adminUser?.email ? adminUser.email.split('@')[0] : 'Admin Quản Trị'}
+              </p>
+              <p className="text-[10px] text-amber-400 font-medium">Super Admin Tối Cao</p>
             </div>
           </div>
         </div>
@@ -133,13 +215,14 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>RLS & RBAC Kích hoạt</span>
             </div>
-            <Link
-              href="/"
-              className="flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:text-red-300 transition-colors"
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-left"
             >
               <LogOut className="w-4 h-4" />
-              <span>Rời khỏi CMS</span>
-            </Link>
+              <span>Đăng xuất & Khóa CMS</span>
+            </button>
           </div>
         </aside>
 
