@@ -24,10 +24,12 @@ import {
   Flame,
   Star,
   Globe,
-  RefreshCw
+  RefreshCw,
+  Wand2
 } from 'lucide-react';
 import { Suspense } from 'react';
 import { Article, ArticleStatus } from '@/types/database';
+import { AutoCoverModal } from '@/components/admin/AutoCoverModal';
 
 function toDatetimeLocalString(isoDate?: string | null): string {
   if (!isoDate) return '';
@@ -69,6 +71,7 @@ function EditArticleInner() {
   const [isBreaking, setIsBreaking] = useState(false);
 
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
 
   // Load article data from unified API
   useEffect(() => {
@@ -502,6 +505,15 @@ function EditArticleInner() {
               </div>
             )}
 
+            <button
+              type="button"
+              onClick={() => setIsCoverModalOpen(true)}
+              className="w-full py-2.5 px-3 bg-red-50 hover:bg-red-100 text-[#D71920] border border-red-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              <span>🎨 Tự Tạo Ảnh Bìa AI / Poster Đồ Họa</span>
+            </button>
+
             <div>
               <label className="block text-[11px] font-bold text-gray-600 mb-1">
                 Link URL ảnh:
@@ -556,6 +568,18 @@ function EditArticleInner() {
           </div>
         </aside>
       </div>
+      {/* Auto Cover Generator Modal */}
+      <AutoCoverModal
+        isOpen={isCoverModalOpen}
+        onClose={() => setIsCoverModalOpen(false)}
+        articleTitle={title}
+        categoryName={MOCK_CATEGORIES.find(c => c.id === categoryId)?.name || 'Thời sự'}
+        categorySlug={MOCK_CATEGORIES.find(c => c.id === categoryId)?.slug || 'thoi-su'}
+        onSelectImage={(url) => {
+          setImageUrl(url);
+          showToast('Đã áp dụng ảnh bìa mới cho bài viết!');
+        }}
+      />
     </div>
   );
 }

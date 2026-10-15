@@ -358,6 +358,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                       src={article.author.avatar_url}
                       alt={article.author.full_name}
                       fill
+                      sizes="44px"
                       className="object-cover"
                     />
                   </div>
@@ -545,6 +546,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                       src={article.author.avatar_url}
                       alt={article.author.full_name}
                       fill
+                      sizes="64px"
                       className="object-cover"
                     />
                   </div>

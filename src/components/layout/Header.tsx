@@ -122,6 +122,7 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
                 alt="TinVanta — Tin tức nhanh, thông tin chuẩn"
                 fill
                 priority
+                sizes="(max-width: 640px) 160px, (max-width: 1024px) 208px, 240px"
                 className="object-contain object-left group-hover:scale-101 transition-transform duration-300"
               />
             </div>

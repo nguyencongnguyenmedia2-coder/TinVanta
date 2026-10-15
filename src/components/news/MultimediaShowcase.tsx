@@ -106,6 +106,7 @@ export function MultimediaShowcase() {
               src={leadItem.imageUrl}
               alt={leadItem.title}
               fill
+              sizes="(max-width: 1024px) 100vw, 750px"
               className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -144,6 +145,7 @@ export function MultimediaShowcase() {
                   src={item.imageUrl}
                   alt={item.title}
                   fill
+                  sizes="(max-width: 640px) 112px, 128px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors" />

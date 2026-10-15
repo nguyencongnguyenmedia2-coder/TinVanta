@@ -220,12 +220,12 @@ export function NewsCard({
   return (
     <article className="group bg-white rounded-2xl overflow-hidden border border-gray-200/80 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col h-full">
       <div className="relative aspect-16/10 w-full overflow-hidden block bg-gray-100">
-        <Link href={`/bai-viet/${article.slug}`} className="block w-full h-full">
+        <Link href={`/bai-viet/${article.slug}`} className="relative block w-full h-full">
           <Image
             src={imageUrl}
             alt={article.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
             className="object-cover group-hover:scale-104 transition-transform duration-500"
           />
         </Link>

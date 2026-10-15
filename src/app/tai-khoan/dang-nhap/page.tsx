@@ -68,6 +68,7 @@ function LoginForm() {
             alt="TinVanta — Tin tức nhanh, thông tin chuẩn"
             fill
             priority
+            sizes="208px"
             className="object-contain"
           />
         </div>

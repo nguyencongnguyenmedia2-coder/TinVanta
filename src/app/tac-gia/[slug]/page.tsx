@@ -68,6 +68,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
               src={author.avatar_url}
               alt={author.full_name}
               fill
+              sizes="(max-width: 640px) 96px, 112px"
               className="object-cover"
             />
           </div>

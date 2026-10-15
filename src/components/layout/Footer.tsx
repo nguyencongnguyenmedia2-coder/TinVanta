@@ -52,6 +52,7 @@ export function Footer({ categories }: FooterProps) {
                   src="/logo-tinvanta-v2.png"
                   alt="TinVanta — Tin tức nhanh, thông tin chuẩn"
                   fill
+                  sizes="(max-width: 640px) 208px, 256px"
                   className="object-contain object-left group-hover:scale-101 transition-transform duration-300"
                 />
               </div>

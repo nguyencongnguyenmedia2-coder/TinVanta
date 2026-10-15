@@ -86,6 +86,7 @@ export function OpinionColumn() {
                     src={item.authorAvatar} 
                     alt={item.authorName} 
                     fill 
+                    sizes="48px"
                     className="object-cover group-hover:scale-105 transition-transform"
                   />
                 </div>

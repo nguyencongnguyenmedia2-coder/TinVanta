@@ -59,6 +59,7 @@ export function FeaturedSpotlight({ articles }: FeaturedSpotlightProps) {
                     alt={leadArticle.title}
                     fill
                     priority
+                    sizes="(max-width: 1024px) 100vw, 750px"
                     className="object-cover group-hover:scale-103 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -136,6 +137,7 @@ export function FeaturedSpotlight({ articles }: FeaturedSpotlightProps) {
                     src={subLeadArticle.featured_image?.public_url || 'https://images.unsplash.com/photo-1541427468627-a89a96e5ca1d?w=800&auto=format&fit=crop&q=80'}
                     alt={subLeadArticle.title}
                     fill
+                    sizes="(max-width: 640px) 112px, 144px"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </Link>

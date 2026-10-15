@@ -58,6 +58,12 @@ function TipTapInner({ content, onChange }: TipTapEditorProps) {
     immediatelyRender: false,
   });
 
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, { emitUpdate: false });
+    }
+  }, [content, editor]);
+
   if (!editor) {
     return (
       <div className="border border-gray-200 rounded-xl p-6 min-h-[350px] bg-gray-50 flex items-center justify-center text-gray-400 text-xs">

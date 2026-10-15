@@ -111,6 +111,7 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
               src="/logo-tinvanta-v2.png"
               alt="TinVanta CMS"
               fill
+              sizes="176px"
               className="object-contain"
             />
           </div>
@@ -146,6 +147,7 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
                 src="/logo-tinvanta-v2.png"
                 alt="TinVanta CMS"
                 fill
+                sizes="128px"
                 className="object-contain"
               />
             </div>

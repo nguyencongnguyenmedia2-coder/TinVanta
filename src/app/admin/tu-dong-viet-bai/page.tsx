@@ -26,9 +26,11 @@ import {
   Zap,
   Save,
   SlidersHorizontal,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Wand2
 } from 'lucide-react';
 import { Article } from '@/types/database';
+import { AutoCoverModal } from '@/components/admin/AutoCoverModal';
 
 interface CrawlHistoryItem {
   sourceUrl: string;
@@ -100,6 +102,7 @@ export default function AutoPublishAdminPage() {
   const [editingDateArticleId, setEditingDateArticleId] = useState<string | null>(null);
   const [editDateTimeValue, setEditDateTimeValue] = useState<string>('');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
+  const [coverModalArticle, setCoverModalArticle] = useState<Article | null>(null);
 
   // History state
   const [historyList, setHistoryList] = useState<CrawlHistoryItem[]>([]);
@@ -708,6 +711,7 @@ export default function AutoPublishAdminPage() {
                               src={art.featured_image.public_url}
                               alt={art.title}
                               fill
+                              sizes="(max-width: 1024px) 100vw, 450px"
                               className="object-cover"
                               unoptimized
                             />
@@ -737,6 +741,17 @@ export default function AutoPublishAdminPage() {
                               </span>
                             )}
                           </div>
+
+                          {/* Quick AI Cover Changer */}
+                          <button
+                            type="button"
+                            onClick={() => setCoverModalArticle(art)}
+                            className="absolute bottom-1.5 right-1.5 p-1 px-2 rounded-md bg-black/70 hover:bg-[#D71920] text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Tự tạo ảnh bìa AI hoặc poster đồ họa mới cho bài này"
+                          >
+                            <Wand2 className="w-2.5 h-2.5 text-amber-300" />
+                            <span>Đổi ảnh AI</span>
+                          </button>
                         </div>
 
                         {/* TIÊU ĐỀ */}
@@ -1028,6 +1043,37 @@ export default function AutoPublishAdminPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Auto Cover Modal for Generated Articles */}
+      {coverModalArticle && (
+        <AutoCoverModal
+          isOpen={Boolean(coverModalArticle)}
+          onClose={() => setCoverModalArticle(null)}
+          articleTitle={coverModalArticle.title}
+          categoryName={coverModalArticle.category?.name || 'Thời sự'}
+          categorySlug={coverModalArticle.category?.slug || 'thoi-su'}
+          onSelectImage={(url) => {
+            setGeneratedArticles(prev => prev.map(a => a.id === coverModalArticle.id ? {
+              ...a,
+              featured_image: {
+                id: a.featured_image?.id || `img-${Date.now()}`,
+                filename: 'cover.jpg',
+                storage_path: 'articles/cover.jpg',
+                public_url: url,
+                mime_type: 'image/jpeg',
+                file_size: 400000,
+                created_at: new Date().toISOString()
+              }
+            } : a));
+            fetch('/api/admin/articles', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: coverModalArticle.id, featured_image_url: url })
+            }).catch(() => {});
+            setCoverModalArticle(null);
+          }}
+        />
       )}
     </div>
   );
