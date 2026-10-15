@@ -10,6 +10,12 @@ import { AdCreative } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
 
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+};
+
 /**
  * GET: Lấy danh sách tất cả các banner / chiến dịch quảng cáo
  */
@@ -20,10 +26,10 @@ export async function GET() {
       success: true,
       total: ads.length,
       ads,
-    });
+    }, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error('Lỗi API admin ads GET:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -74,10 +80,11 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Đã tạo và kích hoạt chiến dịch quảng cáo mới thành công!',
       ad: newAd,
-    });
+      ads: getAllCombinedAds(),
+    }, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error('Lỗi API admin ads POST:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -99,7 +106,7 @@ export async function PATCH(request: NextRequest) {
     } = body;
 
     if (!id) {
-      return NextResponse.json({ success: false, error: 'Thiếu ID quảng cáo để cập nhật.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Thiếu ID quảng cáo để cập nhật.' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     const updates: Partial<AdCreative> = {};
@@ -114,7 +121,7 @@ export async function PATCH(request: NextRequest) {
     const updated = updateAdInStore(id, updates);
 
     if (!updated) {
-      return NextResponse.json({ success: false, error: 'Không tìm thấy quảng cáo để cập nhật.' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Không tìm thấy quảng cáo để cập nhật.' }, { status: 404, headers: NO_CACHE_HEADERS });
     }
 
     try {
@@ -128,10 +135,11 @@ export async function PATCH(request: NextRequest) {
       success: true,
       message: 'Cập nhật quảng cáo thành công!',
       ad: updated,
-    });
+      ads: getAllCombinedAds(),
+    }, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error('Lỗi API admin ads PATCH:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -144,7 +152,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ success: false, error: 'Thiếu ID quảng cáo cần xóa.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Thiếu ID quảng cáo cần xóa.' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     const ok = deleteAdFromStore(id);
@@ -159,9 +167,10 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: ok ? 'Đã xóa quảng cáo thành công!' : 'Quảng cáo đã được dỡ bỏ khỏi hệ thống.',
-    });
+      ads: getAllCombinedAds(),
+    }, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error('Lỗi API admin ads DELETE:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }

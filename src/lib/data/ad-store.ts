@@ -3,6 +3,11 @@ import path from 'path';
 import { AdCreative } from '@/types/database';
 import { MOCK_AD_CREATIVES } from './mock-data';
 
+// Global in-memory cache chia sẻ giữa các request trong cùng tiến trình Serverless
+declare global {
+  var __TINVANTA_ADS_STORE__: AdCreative[] | undefined;
+}
+
 function getAdsStoragePath(): string {
   if (process.env.VERCEL) {
     const tmpPath = path.join('/tmp', 'ads-store.json');
@@ -22,33 +27,48 @@ function getAdsStoragePath(): string {
 }
 
 /**
- * Đọc toàn bộ danh sách quảng cáo từ file JSON lưu trên đĩa
+ * Đọc toàn bộ danh sách quảng cáo từ bộ nhớ Global hoặc file JSON
  */
 export function getStoredAds(): AdCreative[] {
+  // 1. Ưu tiên globalThis memory cache
+  if (globalThis.__TINVANTA_ADS_STORE__ && Array.isArray(globalThis.__TINVANTA_ADS_STORE__) && globalThis.__TINVANTA_ADS_STORE__.length > 0) {
+    return globalThis.__TINVANTA_ADS_STORE__;
+  }
+
   try {
     const filePath = getAdsStoragePath();
     if (!fs.existsSync(filePath)) {
       const bundledPath = path.join(process.cwd(), 'src', 'lib', 'data', 'ads-store.json');
       if (fs.existsSync(bundledPath)) {
         const raw = fs.readFileSync(bundledPath, 'utf-8');
-        return raw.trim() ? JSON.parse(raw) : MOCK_AD_CREATIVES;
+        const parsed = raw.trim() ? JSON.parse(raw) : MOCK_AD_CREATIVES;
+        globalThis.__TINVANTA_ADS_STORE__ = parsed;
+        return parsed;
       }
+      globalThis.__TINVANTA_ADS_STORE__ = [...MOCK_AD_CREATIVES];
       return MOCK_AD_CREATIVES;
     }
     const raw = fs.readFileSync(filePath, 'utf-8');
-    if (!raw.trim()) return MOCK_AD_CREATIVES;
+    if (!raw.trim()) {
+      globalThis.__TINVANTA_ADS_STORE__ = [...MOCK_AD_CREATIVES];
+      return MOCK_AD_CREATIVES;
+    }
     const data = JSON.parse(raw);
-    return Array.isArray(data) && data.length > 0 ? data : MOCK_AD_CREATIVES;
+    const result = Array.isArray(data) && data.length > 0 ? data : MOCK_AD_CREATIVES;
+    globalThis.__TINVANTA_ADS_STORE__ = result;
+    return result;
   } catch (error) {
     console.error('Lỗi đọc ads-store.json:', error);
+    globalThis.__TINVANTA_ADS_STORE__ = [...MOCK_AD_CREATIVES];
     return MOCK_AD_CREATIVES;
   }
 }
 
 /**
- * Lưu danh sách quảng cáo xuống đĩa
+ * Lưu danh sách quảng cáo xuống cả Global Memory và đĩa
  */
 function writeAdsToDisk(ads: AdCreative[]): void {
+  globalThis.__TINVANTA_ADS_STORE__ = ads;
   try {
     const filePath = getAdsStoragePath();
     const dir = path.dirname(filePath);
@@ -83,7 +103,6 @@ export function updateAdInStore(id: string, updates: Partial<AdCreative>): AdCre
   const list = getStoredAds();
   const index = list.findIndex(a => a.id === id);
   if (index === -1) {
-    // Nếu chưa có trong store, tìm trong mock
     const mock = MOCK_AD_CREATIVES.find(a => a.id === id);
     if (mock) {
       const merged: AdCreative = { ...mock, ...updates };

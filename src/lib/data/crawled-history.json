@@ -1,5 +1,29 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/chuyen-gia-von-quoc-te-cho-doanh-nghiep-viet-nang-chuan-van-hanh-5132848.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Chuyên gia: Vốn quốc tế chờ doanh nghiệp Việt nâng chuẩn vận hành",
+    "articleId": "art-crawler-1792069030680-240",
+    "articleSlug": "goc-nhin-da-chieu-chuyen-gia-von-quoc-te-cho-doanh-nghiep-viet-nang-chuan-van-hanh-2860",
+    "articleTitle": "Góc nhìn đa chiều: Chuyên gia: Vốn quốc tế chờ doanh nghiệp Việt nâng chuẩn vận hành",
+    "categorySlug": "kinh-te",
+    "wordCount": 1272,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:57:10.680Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792069029317.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:57:09.318Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/dien-may-xanh-tim-nhan-su-dan-dat-nganh-robotics-ai-5132364.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "Điện Máy Xanh tìm nhân sự dẫn dắt ngành robotics, AI",

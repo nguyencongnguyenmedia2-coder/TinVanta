@@ -58,11 +58,9 @@ export default async function HomePage() {
       <MarketDataBar />
 
       {/* 2. TOP HEADER LEADERBOARD AD */}
-      {headerAd && (
-        <div className="hidden sm:block">
-          <AdSlot creative={headerAd} slotName="Tài trợ độc quyền" />
-        </div>
-      )}
+      <div className="w-full">
+        <AdSlot creative={headerAd} slotName="Tài trợ độc quyền" placement="header_top" />
+      </div>
 
       {/* 3. HERO MAGAZINE SPOTLIGHT (TIN TIÊU ĐIỂM ĐA TẦNG ĐẲNG CẤP) */}
       <FeaturedSpotlight articles={featuredArticles} />
@@ -132,9 +130,7 @@ export default async function HomePage() {
           <TrendingWidget articles={trendingRes.articles} latestArticles={streamArticles} />
 
           {/* Sidebar Top Ad Slot */}
-          {sidebarAd && (
-            <AdSlot creative={sidebarAd} slotName="Quảng cáo tài trợ" />
-          )}
+          <AdSlot creative={sidebarAd} slotName="Quảng cáo tài trợ" placement="sidebar_top" />
 
           {/* Khối Khám Phá Chủ Đề Quan Tâm (Tags Cloud) */}
           <div className="bg-gray-50/80 rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs">

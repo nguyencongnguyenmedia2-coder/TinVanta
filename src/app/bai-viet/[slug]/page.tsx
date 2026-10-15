@@ -580,9 +580,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
 
             {/* Sticky Partner Ad Creative */}
-            {sidebarAd && (
-              <AdSlot creative={sidebarAd} slotName="Vị trí đối tác" />
-            )}
+            <AdSlot creative={sidebarAd} slotName="Vị trí đối tác" placement="sidebar_sticky" />
           </aside>
         </div>
       </div>

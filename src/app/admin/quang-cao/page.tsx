@@ -81,14 +81,27 @@ export default function AdminAdsPage() {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Đồng bộ danh sách quảng cáo vào localStorage và bắn sự kiện cho AdSlot toàn trang
+  const syncAdsToLocalAndNotify = (newAds: AdCreative[]) => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tinvanta_ads_override', JSON.stringify(newAds));
+        window.dispatchEvent(new Event('tinvanta_ads_updated'));
+      }
+    } catch (e) {
+      console.error('Lỗi sync quảng cáo sang LocalStorage:', e);
+    }
+  };
+
   // Nạp danh sách quảng cáo từ API
   const fetchAds = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/ads');
+      const res = await fetch('/api/admin/ads', { cache: 'no-store' });
       const data = await res.json();
       if (data.success && Array.isArray(data.ads)) {
         setAds(data.ads);
+        syncAdsToLocalAndNotify(data.ads);
       }
     } catch (err) {
       console.error('Lỗi nạp quảng cáo:', err);
@@ -117,7 +130,9 @@ export default function AdminAdsPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setAds(ads.map(item => item.id === ad.id ? { ...item, is_active: updatedStatus } : item));
+        const nextList = data.ads || ads.map(item => item.id === ad.id ? { ...item, is_active: updatedStatus } : item);
+        setAds(nextList);
+        syncAdsToLocalAndNotify(nextList);
         showToast(updatedStatus ? 'Đã kích hoạt phát sóng banner!' : 'Đã tạm dừng phát sóng banner.');
       } else {
         alert(data.error || 'Có lỗi khi đổi trạng thái');
@@ -159,7 +174,9 @@ export default function AdminAdsPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setAds(ads.filter(item => item.id !== ad.id));
+        const nextList = data.ads || ads.filter(item => item.id !== ad.id);
+        setAds(nextList);
+        syncAdsToLocalAndNotify(nextList);
         showToast('Đã xóa chiến dịch quảng cáo thành công.');
       } else {
         alert(data.error || 'Không thể xóa quảng cáo');
@@ -196,9 +213,14 @@ export default function AdminAdsPage() {
 
         const data = await res.json();
         if (res.ok && data.success) {
+          if (data.ads) {
+            setAds(data.ads);
+            syncAdsToLocalAndNotify(data.ads);
+          } else {
+            fetchAds();
+          }
           showToast(`Đã cập nhật chiến dịch "${formTitle}" thành công!`);
           setModalMode(null);
-          fetchAds();
         } else {
           alert(data.error || 'Lỗi khi cập nhật quảng cáo');
         }
@@ -218,9 +240,14 @@ export default function AdminAdsPage() {
 
         const data = await res.json();
         if (res.ok && data.success) {
+          if (data.ads) {
+            setAds(data.ads);
+            syncAdsToLocalAndNotify(data.ads);
+          } else {
+            fetchAds();
+          }
           showToast(`Đã tạo chiến dịch quảng cáo "${formTitle}" thành công!`);
           setModalMode(null);
-          fetchAds();
         } else {
           alert(data.error || 'Lỗi khi tạo quảng cáo');
         }
