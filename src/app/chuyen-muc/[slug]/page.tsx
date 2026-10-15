@@ -44,6 +44,20 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       description: category.description || '',
       url: canonicalUrl,
       type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${category.name} | TinVanta`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${category.name} | TinVanta`,
+      description: category.description || '',
+      images: [`${siteUrl}/og-image.jpg`],
     },
     robots: {
       index: true,

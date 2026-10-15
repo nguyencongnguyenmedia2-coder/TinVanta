@@ -36,7 +36,13 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
       title: `${author.full_name} - Tác Giả & Phóng Viên TinVanta`,
       description: author.bio || '',
       url: canonicalUrl,
-      images: author.avatar_url ? [{ url: author.avatar_url, alt: author.full_name }] : undefined,
+      images: author.avatar_url ? [{ url: author.avatar_url, alt: author.full_name }] : [{ url: `${siteUrl}/og-image.jpg` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${author.full_name} | TinVanta`,
+      description: author.bio || '',
+      images: [author.avatar_url || `${siteUrl}/og-image.jpg`],
     },
   };
 }

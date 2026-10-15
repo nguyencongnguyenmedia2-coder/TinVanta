@@ -35,6 +35,20 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
       description: `Tổng hợp các bài viết phân tích, tin tức về chủ đề ${tagName} trên Báo điện tử TinVanta.`,
       url: canonicalUrl,
       type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `Chủ đề: #${tagName} | TinVanta`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Chủ đề: #${tagName} | TinVanta`,
+      description: `Tổng hợp các bài viết phân tích, tin tức về chủ đề ${tagName} trên Báo điện tử TinVanta.`,
+      images: [`${siteUrl}/og-image.jpg`],
     },
   };
 }

@@ -58,18 +58,19 @@ export const metadata: Metadata = {
     description: 'Cập nhật liên tục tin tức thời sự, kinh tế, công nghệ AI, bán dẫn, xã hội, quốc tế nhanh chóng và chuẩn xác nhất tại Việt Nam.',
     images: [
       {
-        url: '/logo-tinvanta.png',
-        width: 1024,
-        height: 341,
-        alt: 'TinVanta — Báo điện tử tin tức nhanh, thông tin chuẩn',
+        url: `${SITE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'TinVanta — Báo điện tử tin tức nhanh, góc nhìn sâu 24/7',
+        type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TinVanta - Tin Tức Nhanh, Thông Tin Chuẩn',
-    description: 'Báo điện tử tin tức tổng hợp thời sự, kinh tế, công nghệ AI 24/7 hàng đầu Việt Nam.',
-    images: ['/logo-tinvanta.png'],
+    title: 'TinVanta - Báo Điện Tử Tin Tức Hàng Đầu 24/7 | Tin Nhanh & Chuẩn Xác',
+    description: 'Cập nhật liên tục tin tức thời sự, kinh tế, công nghệ AI, bán dẫn, xã hội, quốc tế nhanh chóng và chuẩn xác nhất tại Việt Nam.',
+    images: [`${SITE_URL}/og-image.jpg`],
   },
   robots: {
     index: true,
@@ -157,6 +158,13 @@ export default async function RootLayout({
       <head>
         <meta name="google-site-verification" content="google65e91d408d51fefb" />
         <meta name="google-site-verification" content="google65e91d408d51fefb.html" />
+        <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:secure_url" content={`${SITE_URL}/og-image.jpg`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:alt" content="TinVanta — Tin nhanh, góc nhìn sâu 24/7" />
+        <meta name="twitter:image" content={`${SITE_URL}/og-image.jpg`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}

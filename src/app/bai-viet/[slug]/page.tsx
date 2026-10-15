@@ -181,7 +181,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     },
     headline: article.title,
     description: article.sapo,
-    image: article.featured_image?.public_url ? [article.featured_image.public_url] : [`${siteUrl}/logo-tinvanta.png`],
+    image: article.featured_image?.public_url ? [article.featured_image.public_url] : [`${siteUrl}/og-image.jpg`],
     datePublished: article.published_at || new Date().toISOString(),
     dateModified: article.updated_at || article.published_at || new Date().toISOString(),
     articleSection: article.category?.name || 'Thời sự',
