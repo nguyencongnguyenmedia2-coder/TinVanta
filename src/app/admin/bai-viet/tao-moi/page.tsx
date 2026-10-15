@@ -16,9 +16,24 @@ import {
   Loader2, 
   Globe, 
   Tag, 
-  Image as ImageIcon 
+  Image as ImageIcon,
+  Calendar,
+  Clock
 } from 'lucide-react';
 import { Suspense } from 'react';
+
+function toDatetimeLocalString(isoDate?: string | null): string {
+  if (!isoDate) return '';
+  const d = new Date(isoDate);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
 function CreateArticleInner() {
   const router = useRouter();
@@ -33,6 +48,7 @@ function CreateArticleInner() {
   const [imageCaption, setImageCaption] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
   const [isBreaking, setIsBreaking] = useState(false);
+  const [publishedAtLocal, setPublishedAtLocal] = useState('');
 
   // SEO State
   const [seoTitle, setSeoTitle] = useState('');
@@ -114,10 +130,12 @@ function CreateArticleInner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
+          slug: slug ? slug.trim().toLowerCase() : undefined,
           sapo,
           content_html: contentHtml,
           category_id: categoryId,
           status,
+          published_at: publishedAtLocal ? new Date(publishedAtLocal).toISOString() : undefined,
           featured_image_url: imageUrl,
           is_featured: isFeatured,
           is_breaking: isBreaking,
@@ -348,6 +366,54 @@ function CreateArticleInner() {
                 {aiNotice && <p className="text-[10px] text-gray-400 italic pt-1">{aiNotice}</p>}
               </div>
             )}
+          </div>
+
+          {/* Cài đặt Ngày & Giờ Đăng Bài (Lập lịch phát hành) */}
+          <div className="bg-white p-5 rounded-xl border-2 border-red-100 shadow-xs space-y-3">
+            <div className="flex items-center gap-2 border-b border-gray-100 pb-2.5">
+              <Calendar className="w-4 h-4 text-[#D71920]" />
+              <h3 className="font-black text-xs uppercase tracking-wider text-[#172033]">
+                Cài Đặt Ngày & Giờ Đăng Bài
+              </h3>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                Thời gian xuất bản:
+              </label>
+              <input
+                type="datetime-local"
+                value={publishedAtLocal}
+                onChange={(e) => setPublishedAtLocal(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-xs font-bold text-gray-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
+              />
+              <p className="text-[11px] text-gray-400 mt-1 italic">
+                * Nếu để trống, hệ thống sẽ tự động dùng thời điểm hiện tại khi xuất bản.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5 pt-1 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => setPublishedAtLocal(toDatetimeLocalString(new Date().toISOString()))}
+                className="px-2 py-1.5 bg-gray-50 hover:bg-red-50 hover:text-[#D71920] border border-gray-200 rounded-lg text-[11px] font-bold text-gray-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <Clock className="w-3 h-3 text-[#D71920]" />
+                <span>Bây giờ</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  tomorrow.setHours(8, 0, 0, 0);
+                  setPublishedAtLocal(toDatetimeLocalString(tomorrow.toISOString()));
+                }}
+                className="px-2 py-1.5 bg-gray-50 hover:bg-red-50 hover:text-[#D71920] border border-gray-200 rounded-lg text-[11px] font-bold text-gray-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <span>📅 Sáng mai</span>
+              </button>
+            </div>
           </div>
 
           {/* Phân loại & Chuyên mục */}

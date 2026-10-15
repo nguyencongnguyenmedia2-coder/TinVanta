@@ -1,5 +1,29 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/iea-the-gioi-co-nguy-co-thieu-dau-diesel-den-giua-nam-2027-5132344.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "IEA: Thế giới có nguy cơ thiếu dầu diesel đến giữa năm 2027",
+    "articleId": "art-crawler-1792067402413-491",
+    "articleSlug": "tieu-diem-thoi-su-iea-the-gioi-co-nguy-co-thieu-dau-diesel-den-giua-nam-2027-4494",
+    "articleTitle": "Tiêu điểm thời sự: IEA: Thế giới có nguy cơ thiếu dầu diesel đến giữa năm 2027",
+    "categorySlug": "kinh-te",
+    "wordCount": 813,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:30:02.413Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792067400391.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:30:00.393Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/du-thuyen-cua-ba-truong-my-lan-ha-gia-gan-mot-nua-5132417.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "Du thuyền của bà Trương Mỹ Lan hạ giá gần một nửa",

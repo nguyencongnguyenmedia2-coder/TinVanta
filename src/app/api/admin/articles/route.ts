@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { 
       title, 
+      slug: customSlug,
       sapo, 
       content_html, 
       category_id, 
@@ -101,6 +102,7 @@ export async function POST(request: NextRequest) {
       featured_image_url,
       is_featured = false,
       is_breaking = false,
+      published_at,
       tags = []
     } = body;
 
@@ -110,14 +112,20 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
     const articleId = `art-${Date.now()}`;
-    const slug = generateVietnameseSlug(title) + `-${Date.now().toString().slice(-4)}`;
+    const cleanSlug = customSlug && customSlug.trim()
+      ? customSlug.trim().toLowerCase()
+      : generateVietnameseSlug(title) + `-${Date.now().toString().slice(-4)}`;
     const matchedCategory = MOCK_CATEGORIES.find(c => c.id === category_id || c.slug === category_id) || MOCK_CATEGORIES[0];
     const defaultAuthor = MOCK_AUTHORS[0];
+
+    const finalPublishedAt = published_at 
+      ? new Date(published_at).toISOString() 
+      : (status === 'published' ? now : null);
 
     const newArticle: Article = {
       id: articleId,
       title: title.trim(),
-      slug,
+      slug: cleanSlug,
       sapo: sapo.trim(),
       content_html: content_html || `<p>${sapo}</p>`,
       primary_category_id: matchedCategory.id,
@@ -128,7 +136,7 @@ export async function POST(request: NextRequest) {
       is_featured: Boolean(is_featured),
       is_breaking: Boolean(is_breaking),
       allow_comments: true,
-      published_at: status === 'published' ? now : null,
+      published_at: finalPublishedAt,
       created_at: now,
       updated_at: now,
       view_count: 0,
@@ -174,7 +182,21 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, status, published_at, title, sapo, content_html, category_id } = body;
+    const { 
+      id, 
+      status, 
+      published_at, 
+      title, 
+      slug,
+      sapo, 
+      content_html, 
+      category_id,
+      featured_image_url,
+      is_featured,
+      is_breaking,
+      seo_title,
+      seo_description
+    } = body;
 
     if (!id) {
       return NextResponse.json({ success: false, error: 'Thiếu ID bài viết.' }, { status: 400 });
@@ -192,14 +214,37 @@ export async function PATCH(request: NextRequest) {
       updates.published_at = new Date(published_at).toISOString();
     }
     if (title) updates.title = title.trim();
+    if (slug) updates.slug = slug.trim().toLowerCase();
     if (sapo) updates.sapo = sapo.trim();
-    if (content_html) updates.content_html = content_html;
+    if (content_html) {
+      updates.content_html = content_html;
+      updates.reading_time_minutes = calculateReadingTime(content_html);
+    }
+    if (typeof is_featured === 'boolean') updates.is_featured = is_featured;
+    if (typeof is_breaking === 'boolean') updates.is_breaking = is_breaking;
+    if (seo_title) updates.seo_title = seo_title.trim();
+    if (seo_description) updates.seo_description = seo_description.trim();
+
     if (category_id) {
       const cat = MOCK_CATEGORIES.find(c => c.id === category_id || c.slug === category_id);
       if (cat) {
         updates.primary_category_id = cat.id;
         updates.category = cat;
       }
+    }
+
+    if (featured_image_url) {
+      updates.featured_image = {
+        id: `img-${Date.now()}`,
+        filename: 'featured-image.jpg',
+        storage_path: 'articles/featured-image.jpg',
+        public_url: featured_image_url,
+        mime_type: 'image/jpeg',
+        file_size: 250000,
+        alt_text: title || 'Ảnh bài viết',
+        caption: title || 'Ảnh bài viết',
+        created_at: new Date().toISOString(),
+      };
     }
 
     // Thử cập nhật trong store đĩa trước
