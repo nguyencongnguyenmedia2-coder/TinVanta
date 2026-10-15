@@ -175,10 +175,21 @@ DROP TRIGGER IF EXISTS trg_articles_updated_at ON public.articles;
 CREATE TRIGGER trg_articles_updated_at BEFORE UPDATE ON public.articles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- Full Text Search column & index (tiếng Việt không dấu và có dấu)
-ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS search_vector TSVECTOR
-  GENERATED ALWAYS AS (
-    to_tsvector('simple', unaccent(title || ' ' || sapo || ' ' || coalesce(content_html, '')))
-  ) STORED;
+ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS search_vector TSVECTOR;
+
+CREATE OR REPLACE FUNCTION public.articles_update_search_vector()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.search_vector := to_tsvector('simple', unaccent(coalesce(NEW.title, '') || ' ' || coalesce(NEW.sapo, '') || ' ' || coalesce(NEW.content_html, '')));
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_articles_search_vector ON public.articles;
+CREATE TRIGGER trg_articles_search_vector
+BEFORE INSERT OR UPDATE ON public.articles
+FOR EACH ROW EXECUTE FUNCTION public.articles_update_search_vector();
+
 CREATE INDEX IF NOT EXISTS idx_articles_search ON public.articles USING GIN(search_vector);
 
 -- --------------------------------------------------------------------
