@@ -412,3 +412,14 @@ export const MOCK_AD_CREATIVES: AdCreative[] = [
     created_at: STATIC_NOW
   }
 ];
+
+export function addDynamicArticle(article: Article) {
+  // Check if article already exists
+  const existingIdx = MOCK_ARTICLES.findIndex(a => a.id === article.id || a.slug === article.slug);
+  if (existingIdx >= 0) {
+    MOCK_ARTICLES[existingIdx] = article;
+  } else {
+    MOCK_ARTICLES.unshift(article);
+  }
+}
+

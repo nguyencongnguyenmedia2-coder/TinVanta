@@ -20,7 +20,8 @@ import {
   LogOut, 
   ShieldCheck,
   Menu,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 
 interface AdminLayoutClientProps {
@@ -34,6 +35,7 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
   const navigation = [
     { name: 'Tổng quan', href: '/admin', icon: LayoutDashboard },
     { name: 'Quản lý bài viết', href: '/admin/bai-viet', icon: FileText },
+    { name: '⚡ Tự động viết & đăng bài (AI)', href: '/admin/tu-dong-viet-bai', icon: Sparkles },
     { name: 'Chuyên mục', href: '/admin/chuyen-muc', icon: FolderTree },
     { name: 'Thẻ bài viết (Tags)', href: '/admin/the-tags', icon: Tags },
     { name: 'Thư viện Media', href: '/admin/media', icon: ImageIcon },
