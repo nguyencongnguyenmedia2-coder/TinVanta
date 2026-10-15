@@ -1,0 +1,105 @@
+[
+  {
+    "id": "art-crawler-1792059365156",
+    "title": "Tiêu điểm thời sự: Chứng khoán mất mốc 1.700 điểm",
+    "slug": "tieu-diem-thoi-su-chung-khoan-mat-moc-1700-diem-6685",
+    "sapo": "Theo ghi nhận và tổng hợp chuyên sâu từ TinVanta (dựa trên diễn biến mới nhất từ VnExpress), vụ việc \"Chứng khoán mất mốc 1.700 điểm\" đang nhận được sự quan tâm đặc biệt của dư luận và giới chuyên môn. Những dữ liệu và động thái vừa được công bố không chỉ phản ánh trực diện bản chất sự kiện mà còn đặt ra nhiều vấn đề quan trọng cần nhìn nhận thấu đáo trong bức tranh tổng thể của ngành kinh tế.",
+    "content_html": "<div class=\"article-lead-highlight mb-6 p-5 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-600 rounded-r-xl\">\n  <p class=\"text-gray-800 font-medium leading-relaxed italic m-0\">\n    <strong>Tóm lược nhanh:</strong> Sự kiện diễn ra với nhiều diễn biến đáng chú ý, đòi hỏi sự vào cuộc quyết liệt và góc nhìn khách quan từ nhiều phía nhằm đưa ra đánh giá chuẩn xác nhất cho bạn đọc.\n  </p>\n</div>\n\n<h2>1. Bối cảnh và diễn biến cốt lõi của sự việc</h2>\n<p>-1?\"ttf\":\"woff\";localStorage.setItem(formatStorageKey,format)}return format}();var fonts=document.querySelectorAll(\".webfont\");var urlAttribute=\"data-cache-file-\"+fontFormat;var hashAttribute=\"data-cache-hash-\"+fontFormat;var nameAttribute=\"data-cache-name\";for(var i=0,j=fonts.length;i if(('serviceWorker'in navigator)&&isBot===false){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw-production.js');});} !function(e){\"use strict\";var t=function(t,n,r){function o(){i.addEventListener&&i.removeEventListener(\"load\",o),i.media=r||\"all\"}var a,l=e.document,i=l.createElement(\"link\");if(n)a=n;else{var d=(l.body||l.getElementsByTagName(\"head\")[0]).childNodes;a=d[d.length-1]}var s=l.styleSheets;i.rel=\"stylesheet\",i.href=t,i.media=\"only x\",function e(t){if(l.body)return t();setTimeout(function(){e(t)})}(function(){a.parentNode.insertBefore(i,n?a:a.nextSibling)});var u=function(e){for(var t=i.href,n=s.length;n--;)if(s[n].href===t)return e();setTimeout(function(){u(e)})};return i.addEventListener&&i.addEventListener(\"load\",o),i.onloadcssdefined=u,u(o),i};\"undefined\"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}(\"undefined\"!=typeof global?global:this),function(e){if(e.loadCSS){var t=loadCSS.relpreload={};if(t.support=function(){try{return e.document.createElement(\"link\").relList.supports(\"preload\")}catch(e){return!1}},t.poly=function(){for(var t=e.document.getElementsByTagName(\"link\"),n=0;n =200&&request.status var list_box_gt={\"phimdecu\":{\"code\":200,\"data\":[{\"title\":\"Nh\\u00e0 tr\\u1ecd Balanha\",\"share_url\":\"\\/nha-tro-balanha-tieng-cuoi-tu-su-khon-kho-4076174.html\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/04\\/02\\/nha-tro-balanha-1585829180-2009-1585829236.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/04\\/02\\/nha-tro-balanha-1585829180-2009-1585829236.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=QmQy3LaS-ZdvKJ-ZY3IPYQ\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/04\\/02\\/nha-tro-balanha-1585829180-2009-1585829236.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=HRCG3dc3W3K-0V9xxrLsXw\"}},{\"title\":\"Th\\u1ebf gi\\u1edbi h\\u00f4n nh\\u00e2n\",\"share_url\":\"\\/ly-do-phim-19-the-gioi-hon-nhan-gay-sot-4095614.html\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/05\\/13\\/The-gioi-hon-nhan-1589354805.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/The-gioi-hon-nhan-1589354805.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=E6uztpUxajUiuOzuyzP6aw\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/The-gioi-hon-nhan-1589354805.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=TAwzQSOWZ4c4o3fk31n8TQ\"}},{\"title\":\"Ho\\u1ea1t \\u0111\\u1ed9ng ngo\\u1ea1i kh\\u00f3a\",\"share_url\":\"\\/extracurricular-series-ve-the-gioi-mai-dam-4095160.html\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Hoat-dong-ngoai-khoa-Extracurricular-1589354804.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Hoat-dong-ngoai-khoa-Extracurricular-1589354804.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=MD6uH0P4vcDyrg_w6coJpw\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Hoat-dong-ngoai-khoa-Extracurricular-1589354804.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=S53yEn5w9mcoodezosh36w\"}},{\"title\":\"Into the Night\",\"share_url\":\"javascript:;\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Into-The-Night-1589354805.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Into-The-Night-1589354805.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=y5iMOlqu5tQWVE2dnC9PNQ\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Into-The-Night-1589354805.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=i-P0hnaBdRUAqcbpViYiRA\"}},{\"title\":\"Nh\\u1eefng ng\\u00e0y kh\\u00f4ng qu\\u00ean\",\"share_url\":\"\\/nhung-ngay-khong-quen-tieng-cuoi-thoi-dich-4086344.html\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Nhung-ngay-khong-quen-1589354805.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Nhung-ngay-khong-quen-1589354805.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=3qj-OEii6SO4tkpFLRuIuA\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Nhung-ngay-khong-quen-1589354805.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=nZmGElMr4W92etFMvrqDwg\"}},{\"title\":\"Bad Education\",\"share_url\":\"\\/loat-phim-truc-tuyen-noi-bat-thang-4-4078260.html\",\"thumbnail_url\":\"https:\\/\\/i-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Bad-Education-1589354804.jpg\",\"thumb_list\":{\"thumb_300_180_100_1_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Bad-Education-1589354804.jpg?w=300&h=180&q=100&dpr=1&fit=crop&s=eMVOsD8BzhCzMqQdFbF7XA\",\"thumb_300_180_100_2_crop\":\"https:\\/\\/i1-giaitri.vnecdn.net\\/2020\\/05\\/13\\/Bad-Education-1589354804.jpg?w=300&h=180&q=100&dpr=2&fit=crop&s=Chqqf7p_osnju2eBeBsFdw\"}}]},\"hottopic\":{\"ids\":\"13328,24605,22465,23636\"}} function decodeNestedURI(o){try{decodeURIComponent(o)}catch(n){o=o.replace(/\\s+/g,\"\").replace(/(%20)+/g,\"\")}let n=o,e=null;for(;e=decodeURIComponent(n),e!=n;)n=e;return e}function strip_tags_data(o,n){for(var e=[\"onclick\",\"oncontextmenu\",\"ondblclick\",\"onmousedown\",\"onmouseenter\",\"onmouseleave\",\"onmousemove\",\"onmouseout\",\"onmouseover\",\"onmouseup\",\"oninput\",\"onload\",\"onerror\",\"onreadystatechange\",\"onfilterchange\",\"onpropertychange\",\"onqt_error\",\"onbegin\",\"formaction\",\"onfocus\",\"onkeyup\",\"onstart\",\"contentscripttype\",\"style\",\"onunload\",\"onafterprint\",\"onbeforeprint\",\"onbeforeunload\",\"onhashchange\",\"onmessage\",\"ononline\",\"onoffline\",\"onpagehide\",\"onpageshow\",\"onpopstate\",\"onresize\",\"onstorage\",\"onblur\",\"onchange\",\"oninvalid\",\"onreset\",\"onsearch\",\"onselect\",\"onsubmit\",\"onkeydown\",\"onkeypress\",\"onmousewheel\",\"onwheel\",\"ondragend\",\"ondragenter\",\"ondragleave\",\"ondragover\",\"ondragstart\",\"ondrag\",\"ondrop\",\"onscroll\",\"oncopy\",\"oncut\",\"onpaste\",\"onabort\",\"oncanplaythrough\",\"oncanplay\",\"oncuechange\",\"ondurationchange\",\"onemptied\",\"onended\",\"onloadeddata\",\"onloadedmetadata\",\"onloadstart\",\"onpause\",\"onplaying\",\"onplay\",\"onprogress\",\"onratechange\",\"onseeked\",\"onseeking\",\"onstalled\",\"onsuspend\",\"ontimeupdate\",\"onvolumechange\",\"onwaiting\",\"onshow\",\"ontoggle\",\"dynsrc\",\"javascript:\",\"prompt\",\"constructor.\",\".prototype\",\"constructor[\",\"[prototype\",\"__proto__\",\"window.\",\"window[\",\"location.\",\"location[\",\"localstorage.\",\"localstorage[\",\"document.\",\"document[\",\"sessionstorage.\",\"sessionstorage[\",\"self.\",\"self[\"],t=o.toLowerCase(),a=0;a -1)return\"data not allowed\";n=(((n||\"\")+\"\").toLowerCase().match(/ /g)||[]).join(\"\");return o.replace(/ | /gi,\"\").replace(/ ]*>/gi,(function(o,e){return n.indexOf(\" \")>-1?o:\"\"}))}function checkQueryXSS(o,n){n=void 0!==n&&n?1:0;var e=decodeNestedURI(o);if(e!=strip_tags_data(e)){if(1==n){var t=window.location.protocol+\"//\"+window.location.hostname+window.location.pathname;return void(t!=window.location.href&&(window.location.href=t))}var a=e.indexOf(\"?\");return-1==a&&(a=e.indexOf(\"#\")),-1==a?o:e.substr(0,a)}return 1==n?void 0:o}checkQueryXSS(window.location.href,1); var appendTracking=function(){var dataItm=document.querySelectorAll('[data-itm-source]:not([data-itm-added=\"1\"])');var dataItmLength=dataItm.length;if(dataItmLength>0){for(var di=0;di var isDetailPodcast=false; var LOGO_TET=''; Thứ năm, 15/10/2026 Mới nhất Tin theo khu vực Hà Nội TP HCM International Mới nhất VnE-GO Thời sự Thế giới Kinh doanh Khoa học công nghệ Góc nhìn Bất động sản Sức khỏe Thể thao Giải trí Pháp luật Giáo dục Đời sống Xe Du lịch Ý kiến Tâm sự Thư giãn Tất cả try{googTagCode.display.push('sis_bgu');}catch(e){} Trở lại Kinh doanh .layout_version_2 .item_slide_show.clearfix:has(.orientation-landscape) {max-width:100%}.layout_version_2 img{object-fit:cover}div>.layout_version_2{margin-bottom:15px!important}div>.layout_version_2 .box_embed_video,div>.layout_version_2 .embed-container{margin-bottom:0!important} Kinh doanh Chứng khoán Thứ năm, 15/10/2026, 15:36 (GMT+7) Chứng khoán mất mốc 1.700 điểm Trở lại --> --> Chứng khoán mất mốc 1.700 điểm Áp lực xả hàng vào cuối phiên, nhất là cổ phiếu trụ và dầu khí, đã khiến chứng khoán điều chỉnh phiên thứ 7 liên tiếp, thủng mốc 1.700 điểm.\n\nTrong hơn hai tháng qua, chứng khoán luôn giằng co trong xu hướng đi xuống nhưng mốc 1.700 điểm vẫn được giữ vững. Tuy nhiên, VN-Index hôm nay đã xuyên thủng mốc tâm lý quan trọng này khi giảm hơn 6,5 điểm và đóng cửa ở 1.698 điểm.\n\nChỉ số chung đã nhiều lúc về dưới ngưỡng điểm trên từ buổi sáng, song vẫn được kéo lên nhờ một số mã trụ vẫn thu hút dòng tiền. Song, từ sau 14h, áp lực bán lan rộng ở rổ VN30 và các cổ phiếu dầu khí, hóa chất. Chỉ số đại diện sàn HoSE có lúc sụt tới hơn 14 điểm, giảm về sát 1.690 điểm.\n\nTuy nhiên, trên sàn HoSE vẫn có 152 cổ phiếu tăng giá, nhiều hơn so với 147 cổ phiếu giảm. Điều này cho thấy mức độ đồng thuận trên thị trường thấp và chỉ số chung đang chịu sức ép lớn từ một nhóm mã.\n\nTheo tính toán của VnDirect, VHM của Vinhomes góp hơn 3,6 điểm vào mức giảm của VN-Index. Mã này đóng cửa ở 58.900 đồng, sụt 3,4%. Thanh khoản ghi nhận gần 687 tỷ đồng, đứng thứ 2 toàn thị trường.</p>\n\n<div class=\"my-6 p-5 bg-blue-50/60 border border-blue-200 rounded-xl\">\n  <h4 class=\"text-blue-900 font-bold mb-2 flex items-center gap-2\">\n    <span>📌 Dữ liệu then chốt ghi nhận</span>\n  </h4>\n  <ul class=\"list-disc pl-5 space-y-1.5 text-blue-950 text-sm\">\n    <li><strong>Nguồn tin cập nhật:</strong> Ghi nhận thực tế từ báo chí chính thống và thực địa.</li>\n    <li><strong>Phạm vi ảnh hưởng:</strong> Tác động trực tiếp đến lĩnh vực kinh tế và đời sống xã hội.</li>\n    <li><strong>Trạng thái tiếp diễn:</strong> Tiếp tục được các chuyên gia đầu ngành phân tích và làm rõ.</li>\n  </ul>\n</div>\n\n<h2>2. Phân tích tác động và các góc nhìn đa chiều</h2>\n<p>Theo sau là BSR khi góp gần 2 điểm vào mức điều chỉnh của chỉ số chung. Cổ phiếu này giảm 6,3% về 28.200 đồng khi có hơn 60% khớp lệnh đến từ bên bán chủ động.\n\nTổng giá trị giao dịch trên sàn HoSE hôm nay đạt hơn 15.000 tỷ đồng, cải thiện gần 10% so với phiên trước. Đây cũng là phiên có thanh khoản lớn nhất từ đầu tuần, song vẫn duy trì ở mức thấp. Điều này cho thấy tâm lý chung của nhà đầu tư vẫn còn rất thận trọng.\n\nChuỗi bán ròng của khối ngoại kéo dài 17 phiên liên tiếp, dài nhất trong 2 năm qua. Giá trị bán ròng hôm nay ghi nhận khoảng 686 tỷ đồng, tập trung ở VIC, STB, TCB...\n\nTừ hôm qua, Chứng khoán Vietcombank (VCBS) đã cho rằng VN-Index đang di chuyển chạm mốc 1.700 điểm nên xác suất cao thị trường sẽ tiếp tục điều chỉnh rung lắc với vùng hỗ trợ ngắn hạn quanh 1.650 điểm. Trên khung đồ thị giờ, đường trung bình động hội tụ phân kỳ ( MACD ) vẫn tiếp tục hướng xuống và chưa xuất hiện tín hiệu tạo đáy, phản ánh xu hướng điều chỉnh ngắn hạn chưa có dấu hiệu dừng lại.\n\nVCBS lưu ý lực cầu quanh các vùng hỗ trợ hiện tại vẫn còn rất yếu, chưa đủ sức kích hoạt nhịp phục hồi rõ nét. Áp lực bán có thể gia tăng mạnh hơn và đưa chỉ số tìm về vùng hỗ trợ tiếp theo quanh 1.650 điểm.</p>\n\n<blockquote class=\"my-6 pl-5 border-l-4 border-gray-400 italic text-gray-700 bg-gray-50 py-3 rounded-r-lg\">\n  \"Một sự kiện thời sự chuẩn mực không chỉ dừng lại ở việc phản ánh điều gì đã xảy ra, mà quan trọng hơn là trả lời câu hỏi: Sự kiện này sẽ tác động như thế nào đến tương lai và mỗi người chúng ta cần hành động ra sao?\"\n  <div class=\"text-xs font-semibold not-italic text-gray-500 mt-2\">— Ban Bình luận & Phân tích Chuyên sâu TinVanta</div>\n</blockquote>\n\n<h2>3. Đánh giá xu hướng và kiến nghị định hướng</h2>\n<p>Trong bối cảnh hiện tại, các chuyên gia khuyến nghị nhà đầu tư tiếp tục bám sát thị trường để kịp thời cơ cấu danh mục khi vi phạm các ngưỡng cắt lỗ. Thay vì vội vàng bắt đáy, nhà đầu tư nên tận dụng nhịp giảm này để sàng lọc những cổ phiếu khỏe, các mã vẫn giữ vững vùng hỗ trợ quan trọng hoặc nền giá tích lũy gần nhất bất chấp áp lực bán chung.\n\n\"Đây sẽ là bước chuẩn bị quan trọng để chủ động giải ngân khi VN-Index cân bằng trở lại, bởi nhóm cổ phiếu chống chịu tốt trong nhịp chỉnh thường là những mã phục hồi nhanh và mạnh nhất khi thị trường đảo chiều\", nhóm phân tích VCBS nhận định.\n\nKhi ô vuông chuyển thành dấu tích xanh là hoàn thành, bạn đọc có thể đóng trang web trên.\n\nKhi nhìn thấy dấu tích xanh bên cạnh VnExpress là đã hoàn thành.</p>\n\n<div class=\"my-6 p-5 bg-emerald-50 border border-emerald-200 rounded-xl\">\n  <h4 class=\"text-emerald-900 font-bold mb-2\">💡 Khuyến nghị & Bài học kinh nghiệm</h4>\n  <p class=\"text-emerald-950 text-sm leading-relaxed mb-0\">\n    Việc chủ động tiếp cận thông tin chuẩn xác, đa chiều và có tư duy phản biện là yếu tố then chốt giúp bạn đọc nắm bắt thời cơ cũng như chủ động thích ứng trước mọi biến đổi của thời cuộc.\n  </p>\n</div>\n\n<p class=\"text-xs text-gray-500 italic mt-8 pt-4 border-t border-gray-200\">\n  * Bài viết được tổng hợp, phân tích và biên tập độc quyền bởi Ban biên tập TinVanta dựa trên tư liệu nguồn từ VnExpress và các cơ quan thông tấn.\n</p>",
+    "primary_category_id": "c0000000-0000-0000-0000-000000000002",
+    "status": "published",
+    "version": 1,
+    "published_at": "2026-10-15T10:16:05.156Z",
+    "reading_time_minutes": 6,
+    "is_featured": false,
+    "is_breaking": false,
+    "allow_comments": true,
+    "seo_title": "Tiêu điểm thời sự: Chứng khoán mất mốc 1.700 điểm | TinVanta",
+    "seo_description": "Theo ghi nhận và tổng hợp chuyên sâu từ TinVanta (dựa trên diễn biến mới nhất từ VnExpress), vụ việc \"Chứng khoán mất mốc 1.700 điểm\" đang nhận được sự quan tâm",
+    "view_count": 3694,
+    "likes_count": 115,
+    "summary_points": [
+      "Bản tin tổng hợp góc nhìn chuyên sâu về \"Chứng khoán mất mốc 1.700 điểm\"",
+      "Phân tích các khía cạnh ảnh hưởng trực tiếp tới lĩnh vực Kinh tế",
+      "Làm rõ các luận điểm then chốt và xu hướng tiếp diễn trong thời gian tới",
+      "Khuyến nghị giải pháp ứng phó thiết thực từ ban chuyên gia TinVanta"
+    ],
+    "created_by": "a0000000-0000-0000-0000-000000000001",
+    "created_at": "2026-10-15T10:16:05.156Z",
+    "updated_at": "2026-10-15T10:16:05.156Z",
+    "category": {
+      "id": "c0000000-0000-0000-0000-000000000002",
+      "name": "Kinh tế",
+      "slug": "kinh-te",
+      "description": "Tài chính, ngân hàng, thị trường chứng khoán, bất động sản và hoạt động doanh nghiệp",
+      "sort_order": 2,
+      "is_active": true,
+      "show_in_menu": true,
+      "created_at": "2026-10-15T04:00:00.000Z",
+      "updated_at": "2026-10-15T04:00:00.000Z"
+    },
+    "author": {
+      "id": "a0000000-0000-0000-0000-000000000001",
+      "email": "nguyen.anh@newshub.vn",
+      "full_name": "Nguyễn Tuấn Anh",
+      "slug": "nguyen-tuan-anh",
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "bio": "Trưởng ban Thời sự - Chính trị NEWSHUB. Hơn 15 năm kinh nghiệm theo dõi các chính sách phát triển kinh tế vĩ mô và đối ngoại.",
+      "title_role": "Trưởng ban Thời sự",
+      "is_author": true,
+      "is_active": true,
+      "created_at": "2025-10-15T00:00:00.000Z",
+      "updated_at": "2026-10-15T04:00:00.000Z"
+    },
+    "tags": [
+      {
+        "id": "tag-crawl-0-1792059365156",
+        "name": "Kinh tế",
+        "slug": "kinh-te",
+        "article_count": 1,
+        "created_at": "2026-10-15T10:16:05.156Z"
+      },
+      {
+        "id": "tag-crawl-1-1792059365156",
+        "name": "Thời sự nóng",
+        "slug": "thoi-su-nong",
+        "article_count": 1,
+        "created_at": "2026-10-15T10:16:05.156Z"
+      },
+      {
+        "id": "tag-crawl-2-1792059365156",
+        "name": "TinVanta phân tích",
+        "slug": "tinvanta-phan-tich",
+        "article_count": 1,
+        "created_at": "2026-10-15T10:16:05.156Z"
+      },
+      {
+        "id": "tag-crawl-3-1792059365157",
+        "name": "Báo chí đa chiều",
+        "slug": "bao-chi-da-chieu",
+        "article_count": 1,
+        "created_at": "2026-10-15T10:16:05.156Z"
+      },
+      {
+        "id": "tag-crawl-4-1792059365157",
+        "name": "VnExpress",
+        "slug": "vnexpress",
+        "article_count": 1,
+        "created_at": "2026-10-15T10:16:05.156Z"
+      }
+    ],
+    "featured_image": {
+      "id": "media-crawl-1792059365157",
+      "filename": "tieu-diem-thoi-su-chung-khoan-mat-moc-1700-diem-6685.jpg",
+      "storage_path": "crawled/tieu-diem-thoi-su-chung-khoan-mat-moc-1700-diem-6685.jpg",
+      "public_url": "https://i1-kinhdoanh.vnecdn.net/2026/10/15/td5-1792052423-4676-1792052470.jpg?w=1200&h=675&q=100&dpr=1&fit=crop&s=NxMESmYvR5qKrZYbgvrF_g",
+      "mime_type": "image/jpeg",
+      "file_size": 380000,
+      "width": 1200,
+      "height": 800,
+      "alt_text": "Tiêu điểm thời sự: Chứng khoán mất mốc 1.700 điểm",
+      "caption": "Hình ảnh phản ánh sự kiện: Tiêu điểm thời sự: Chứng khoán mất mốc 1.700 điểm",
+      "credit": "Nguồn tư liệu: VnExpress",
+      "created_at": "2026-10-15T10:16:05.156Z"
+    }
+  }
+]

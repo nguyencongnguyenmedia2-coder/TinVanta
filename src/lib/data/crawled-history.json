@@ -1,0 +1,38 @@
+[
+  {
+    "sourceUrl": "https://vnexpress.net/chung-khoan-mat-moc-1-700-diem-5132751.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Chứng khoán mất mốc 1.700 điểm",
+    "articleId": "art-crawler-1792059365156",
+    "articleSlug": "tieu-diem-thoi-su-chung-khoan-mat-moc-1700-diem-6685",
+    "articleTitle": "Tiêu điểm thời sự: Chứng khoán mất mốc 1.700 điểm",
+    "categorySlug": "kinh-te",
+    "wordCount": 1178,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:16:05.156Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792059364665.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:16:04.666Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792059338268.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:15:38.268Z"
+  }
+]

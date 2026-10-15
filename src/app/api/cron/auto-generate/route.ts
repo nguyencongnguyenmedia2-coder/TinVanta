@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateAndPublishArticle } from '@/lib/ai/article-writer-service';
+import { crawlRewriteAndPublish } from '@/lib/crawler/auto-news-service';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,27 +15,32 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Tự động xoay tua chủ đề ngẫu nhiên trong 10 chuyên mục
-    const result = await generateAndPublishArticle({
-      categorySlug: 'random',
+    // Tự động cào tin từ các báo lớn, AI viết lại và đăng lên web
+    const result = await crawlRewriteAndPublish({
+      sourceId: 'all',
+      categorySlug: 'all',
       status: 'published',
+      aiProvider: 'auto',
     });
 
     return NextResponse.json({
       status: 'success',
       timestamp: new Date().toISOString(),
-      source: result.source,
+      source_newspaper: result.sourceInfo.sourceName,
+      source_url: result.sourceInfo.originalUrl,
+      original_title: result.sourceInfo.originalTitle,
       published_article: {
         id: result.article.id,
         title: result.article.title,
         slug: result.article.slug,
         category: result.article.category?.name,
-        wordCount: result.wordCount,
+        wordCount: result.aiInfo.wordCount,
         published_at: result.article.published_at,
+        aiProvider: result.aiInfo.provider,
       },
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Lỗi cron tự động đăng bài';
+    const message = error instanceof Error ? error.message : 'Lỗi cron tự động cào và đăng bài';
     return NextResponse.json({ status: 'error', error: message }, { status: 500 });
   }
 }
