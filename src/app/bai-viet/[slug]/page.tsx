@@ -559,7 +559,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 font-medium mb-1.5">
-                    {article.author.title_role} &bull; Báo điện tử TinVanta
+                    {article.author.title_role} &bull; Ban Biên Tập TinVanta
                   </p>
                   {article.author.bio && (
                     <p className="text-xs text-gray-600 leading-relaxed mb-3">

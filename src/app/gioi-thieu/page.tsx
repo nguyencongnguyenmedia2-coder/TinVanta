@@ -12,10 +12,10 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto py-8 space-y-8">
       <div className="border-b border-gray-200 pb-6">
         <h1 className="text-3xl font-black text-[#172033] mb-3">
-          Về Báo Điện Tử TinVanta
+          Về TinVanta
         </h1>
         <p className="text-gray-600 text-base leading-relaxed">
-          Nền tảng báo điện tử tin tức đa phương tiện thế hệ mới, ứng dụng chuyển đổi số toàn diện trong quy trình thu thập, biên tập và phân phối thông tin.
+          Nền tảng tin tức số tổng hợp và phân tích đa phương tiện thế hệ mới, ứng dụng chuyển đổi số toàn diện trong quy trình thu thập, phân tích và cung cấp tri thức số.
         </p>
       </div>
 
@@ -30,9 +30,9 @@ export default function AboutPage() {
 
         <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
           <Award className="w-8 h-8 text-[#D71920] mb-3" />
-          <h3 className="font-bold text-base text-[#172033] mb-2">Chuẩn mực báo chí</h3>
+          <h3 className="font-bold text-base text-[#172033] mb-2">Chuẩn mực thông tin</h3>
           <p className="text-xs text-gray-600 leading-relaxed">
-            Quy trình kiểm chứng thông tin 3 cấp độ chặt chẽ từ phóng viên cơ sở đến biên tập viên và hội đồng biên tập.
+            Quy trình kiểm chứng thông tin đa tầng chặt chẽ, đối chiếu nguồn báo chí chính thống và kiểm tra tính xác thực của dữ liệu.
           </p>
         </div>
 
@@ -46,12 +46,12 @@ export default function AboutPage() {
       </div>
 
       <div className="prose-editorial">
-        <h2>Cơ cấu tổ chức tòa soạn</h2>
+        <h2>Cơ cấu tổ chức vận hành</h2>
         <p>
-          TinVanta vận hành theo mô hình tòa soạn hội tụ hiện đại với các ban chuyên môn: Ban Thời sự - Chính trị, Ban Kinh tế & Thị trường, Ban Công nghệ & Đổi mới sáng tạo, Ban Xã hội & Đời sống, Ban Đa phương tiện Multimedia và Trung tâm Phân tích dữ liệu & Độc giả.
+          TinVanta vận hành theo mô hình trung tâm thông tin số hiện đại với các ban chuyên môn: Ban Thời sự & Chính sách, Ban Kinh tế & Thị trường, Ban Công nghệ & Đổi mới sáng tạo, Ban Đời sống xã hội và Trung tâm Kỹ thuật Dữ liệu.
         </p>
         <p>
-          Hệ sinh thái công nghệ được xây dựng trên nền tảng đám mây mở rộng linh hoạt, tích hợp các công cụ hỗ trợ thông minh nhằm tối ưu năng suất lao động cho đội ngũ nhà báo, phóng viên trên khắp các vùng miền.
+          Hệ sinh thái công nghệ được xây dựng trên nền tảng đám mây mở rộng linh hoạt, tích hợp các công cụ hỗ trợ thông minh nhằm tối ưu năng suất lao động cho đội ngũ biên tập viên và chuyên viên phân tích dữ liệu.
         </p>
       </div>
     </div>

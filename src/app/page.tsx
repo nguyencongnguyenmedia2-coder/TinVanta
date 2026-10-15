@@ -166,11 +166,11 @@ export default async function HomePage() {
             <div className="flex items-center gap-2 text-[#D71920]">
               <BookOpen className="w-4 h-4" />
               <h4 className="font-black text-xs uppercase tracking-wider">
-                Tòa soạn cam kết
+                TinVanta cam kết
               </h4>
             </div>
             <p className="text-xs text-gray-700 leading-relaxed">
-              Mọi thông tin trên TinVanta đều được kiểm chứng độc lập theo quy trình biên tập 7 bước, tuân thủ nghiêm ngặt Luật Báo chí Việt Nam.
+              Mọi thông tin trên TinVanta đều được tổng hợp khách quan, đối chiếu nguồn báo chí chính thống và tuân thủ chặt chẽ pháp luật Việt Nam.
             </p>
             <Link
               href="/gioi-thieu"

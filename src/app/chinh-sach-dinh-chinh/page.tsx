@@ -15,7 +15,7 @@ export default function CorrectionsPolicyPage() {
           Chính Sách Sửa Lỗi & Đính Chính Thông Tin
         </h1>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Báo điện tử TinVanta cam kết tính minh bạch, chính trực và luôn sẵn sàng lắng nghe phản hồi để đính chính kịp thời mọi sai sót trong nội dung đã xuất bản.
+          TinVanta cam kết tính minh bạch, chính trực và luôn sẵn sàng lắng nghe phản hồi để đính chính kịp thời mọi sai sót trong nội dung đã xuất bản.
         </p>
       </div>
 

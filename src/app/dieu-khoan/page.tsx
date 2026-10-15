@@ -32,7 +32,7 @@ export default function TermsPage() {
           Các tổ chức, cá nhân khi trích dẫn nội dung bắt buộc phải:
         </p>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Ghi rõ "Theo Báo điện tử TinVanta" hoặc tác giả bài viết.</li>
+          <li>Ghi rõ "Theo TinVanta" hoặc tác giả bài viết.</li>
           <li>Đặt liên kết ngược (hyperlink) trực tiếp đến bài viết gốc trên website.</li>
           <li>Không tự ý biên tập, thay đổi ý đồ hoặc câu chữ làm sai lệch bản chất sự việc.</li>
         </ul>

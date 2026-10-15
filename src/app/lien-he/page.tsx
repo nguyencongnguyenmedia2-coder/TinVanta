@@ -13,10 +13,10 @@ export default function ContactPage() {
     <div className="max-w-4xl mx-auto py-8 space-y-8">
       <div className="border-b border-gray-200 pb-4">
         <h1 className="text-3xl font-black text-[#172033] mb-2">
-          Liên Hệ Tòa Soạn TinVanta
+          Liên Hệ TinVanta
         </h1>
         <p className="text-xs text-gray-500">
-          Tiếp nhận tin bài, phản ánh của bạn đọc và hợp tác truyền thông, quảng cáo.
+          Tiếp nhận thông tin bạn đọc, hợp tác truyền thông, tài trợ và quảng cáo.
         </p>
       </div>
 
@@ -25,11 +25,11 @@ export default function ContactPage() {
         <div className="space-y-6">
           <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4 text-xs">
             <h2 className="text-sm font-bold uppercase tracking-wider text-[#172033]">
-              Trụ sở chính tòa soạn
+              Văn phòng Hà Nội
             </h2>
             <p className="flex items-start gap-2.5 text-gray-600">
               <MapPin className="w-4 h-4 text-[#D71920] shrink-0 mt-0.5" />
-              <span>Tòa nhà Báo chí Trung ương, số 68 phố Nguyễn Du, quận Hai Bà Trưng, TP. Hà Nội</span>
+              <span>Tầng 8, Tòa nhà Detech Tower, Số 8 Tôn Thất Thuyết, P. Mỹ Đình 2, Q. Nam Từ Liêm, Hà Nội</span>
             </p>
             <p className="flex items-center gap-2.5 text-gray-600">
               <Phone className="w-4 h-4 text-[#D71920] shrink-0" />
@@ -43,11 +43,11 @@ export default function ContactPage() {
 
           <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4 text-xs">
             <h2 className="text-sm font-bold uppercase tracking-wider text-[#172033]">
-              Văn phòng đại diện miền Nam
+              Văn phòng TP. Hồ Chí Minh
             </h2>
             <p className="flex items-start gap-2.5 text-gray-600">
               <MapPin className="w-4 h-4 text-[#D71920] shrink-0 mt-0.5" />
-              <span>Tòa nhà Hữu Nghị, 35 Lê Duẩn, Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
+              <span>Tầng 6, Tòa nhà Dreamplex, 195 Điện Biên Phủ, Phường 15, Q. Bình Thạnh, TP. Hồ Chí Minh</span>
             </p>
             <p className="flex items-center gap-2.5 text-gray-600">
               <Phone className="w-4 h-4 text-[#D71920] shrink-0" />

@@ -224,7 +224,7 @@ export function BottomNavigation({ categories }: BottomNavigationProps) {
               </div>
               <div className="flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Báo điện tử kiểm chứng</span>
+                <span>Thông tin kiểm chứng</span>
               </div>
             </div>
           </div>

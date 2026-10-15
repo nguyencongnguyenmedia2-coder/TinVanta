@@ -34,7 +34,7 @@ const OPINIONS: OpinionItem[] = [
   },
   {
     id: 'op-3',
-    authorName: 'Nhà báo Lê Thanh Mai',
+    authorName: 'Chuyên gia Lê Thanh Mai',
     authorRole: 'Trưởng ban Công nghệ & Đời sống số',
     authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
     title: 'Trí tuệ nhân tạo y tế: Trợ lý đắc lực hay phép thử đạo đức?',

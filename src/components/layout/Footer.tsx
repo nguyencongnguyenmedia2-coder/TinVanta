@@ -57,7 +57,7 @@ export function Footer({ categories }: FooterProps) {
               </div>
             </Link>
             <p className="text-gray-500 text-xs leading-relaxed">
-              Báo điện tử tin tức chính luận, kinh tế, công nghệ và xã hội hàng đầu Việt Nam. Cập nhật thông tin nhanh chóng, kiểm chứng độc lập và chuẩn xác 24/7.
+              Trang tin tức số tổng hợp, phân tích thời sự, kinh tế, công nghệ và xã hội 24/7. Cung cấp thông tin đa chiều, kiểm chứng khách quan và dẫn nguồn chuẩn xác.
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export function Footer({ categories }: FooterProps) {
                 <Mail className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <p className="text-[10px] text-gray-500 uppercase font-semibold">Email Tòa soạn</p>
+                <p className="text-[10px] text-gray-500 uppercase font-semibold">Email Ban Biên Tập</p>
                 <a href="mailto:toasoan@tinvanta.vn" className="font-bold text-xs text-[#172033] hover:text-[#D71920]">
                   toasoan@tinvanta.vn
                 </a>
@@ -190,12 +190,12 @@ export function Footer({ categories }: FooterProps) {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/gioi-thieu" className="text-gray-600 hover:text-[#D71920] block py-0.5">
-                  Giới thiệu tòa soạn
+                  Giới thiệu TinVanta
                 </Link>
               </li>
               <li>
                 <Link href="/chinh-sach-dinh-chinh" className="text-gray-600 hover:text-[#D71920] block py-0.5">
-                  Quy trình sửa lỗi & đính chính
+                  Quy trình đính chính thông tin
                 </Link>
               </li>
               <li>
@@ -216,20 +216,20 @@ export function Footer({ categories }: FooterProps) {
             </ul>
           </div>
 
-          {/* Col 5: Trụ sở & Tiếp nhận thông tin */}
+          {/* Col 5: Văn phòng liên hệ & Tiếp nhận thông tin */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1 space-y-3">
             <h4 className="font-bold text-[#172033] text-xs uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-gray-200">
               <MapPin className="w-3.5 h-3.5 text-[#D71920]" />
-              Địa chỉ Tòa soạn
+              Địa chỉ liên hệ
             </h4>
             <div className="space-y-2 text-[11px] text-gray-600 leading-normal">
               <p>
-                <strong className="text-gray-900 block">Trụ sở chính Hà Nội:</strong>
-                Tòa nhà Báo chí Trung ương, số 68 phố Nguyễn Du, Q. Hai Bà Trưng, Hà Nội.
+                <strong className="text-gray-900 block">Văn phòng Hà Nội:</strong>
+                Tầng 8, Tòa nhà Detech Tower, Số 8 Tôn Thất Thuyết, P. Mỹ Đình 2, Q. Nam Từ Liêm, Hà Nội.
               </p>
               <p>
-                <strong className="text-gray-900 block">VP đại diện TP.HCM:</strong>
-                Tòa nhà Hữu Nghị, 35 Lê Duẩn, Bến Nghé, Quận 1, TP. Hồ Chí Minh.
+                <strong className="text-gray-900 block">Văn phòng TP.HCM:</strong>
+                Tầng 6, Tòa nhà Dreamplex, 195 Điện Biên Phủ, Phường 15, Q. Bình Thạnh, TP. Hồ Chí Minh.
               </p>
             </div>
           </div>
@@ -239,28 +239,28 @@ export function Footer({ categories }: FooterProps) {
         <div className="mt-10 p-5 bg-white rounded-2xl border border-gray-200 shadow-2xs space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-gray-100 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-black text-[#172033] text-sm tracking-wide">BÁO ĐIỆN TỬ TINVANTA</span>
-              <span className="bg-red-50 text-[#D71920] font-bold text-[10px] px-2 py-0.5 rounded border border-red-200">
-                GIẤY PHÉP BTTTT
+              <span className="font-black text-[#172033] text-sm tracking-wide">TINVANTA - TRANG TIN TỨC SỐ TỔNG HỢP</span>
+              <span className="bg-emerald-50 text-emerald-700 font-bold text-[10px] px-2 py-0.5 rounded border border-emerald-200">
+                TRANG TIN TỔNG HỢP
               </span>
             </div>
             <p className="text-[11px] text-gray-500">
-              Giấy phép hoạt động báo chí điện tử số: <strong>168/GP-BTTTT</strong> do Bộ Thông tin và Truyền thông cấp.
+              Chuyên trang thông tin điện tử tổng hợp & phân tích tri thức số trực tuyến 24/7.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-gray-600 leading-relaxed">
             <div>
-              <p><strong>Tổng biên tập:</strong> Nhà báo Nguyễn Tuấn Anh</p>
-              <p><strong>Phó Tổng biên tập:</strong> Nhà báo Lê Thanh Mai</p>
+              <p><strong>Chịu trách nhiệm nội dung:</strong> Nguyễn Tuấn Anh</p>
+              <p><strong>Phụ trách công nghệ & dữ liệu:</strong> Ban Kỹ thuật TinVanta</p>
             </div>
             <div>
-              <p><strong>Cơ quan xuất bản:</strong> Tòa soạn Hội tụ số TinVanta</p>
-              <p><strong>Quy trình kiểm chứng:</strong> Độc lập 7 bước theo chuẩn E-E-A-T</p>
+              <p><strong>Đơn vị phát triển:</strong> TinVanta Media & Technology Network</p>
+              <p><strong>Quy trình biên tập:</strong> Tổng hợp, phân tích đa chiều và dẫn nguồn báo chí chính thống</p>
             </div>
             <div className="text-gray-500">
-              <p>© 2026 TinVanta. Toàn quyền bảo lưu bản quyền.</p>
-              <p>Mọi hành vi sao chép, trích dẫn phải ghi rõ nguồn <em>"Theo Báo điện tử TinVanta"</em> và gắn liên kết gốc.</p>
+              <p>© 2026 TinVanta. Toàn quyền bảo lưu bản quyền nội dung số.</p>
+              <p>Thông tin được trích dẫn theo Luật Sở hữu trí tuệ. Ghi rõ nguồn <em>"Theo TinVanta"</em> và gắn link gốc khi phát hành lại.</p>
             </div>
           </div>
         </div>

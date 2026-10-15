@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     },
   },
   category: 'news',
-  classification: 'Báo điện tử tin tức tổng hợp 24/7',
+  classification: 'Trang thông tin điện tử tổng hợp 24/7',
 };
 
 export default async function RootLayout({
