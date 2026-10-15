@@ -7,6 +7,9 @@ import { NewsCard } from '@/components/news/NewsCard';
 import { TrendingWidget } from '@/components/news/TrendingWidget';
 import { ChevronRight, Home, Folder } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string }>;

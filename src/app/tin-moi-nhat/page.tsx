@@ -5,6 +5,9 @@ import { getPublishedArticles } from '@/lib/data/articles';
 import { NewsCard } from '@/components/news/NewsCard';
 import { Clock, Radio, ArrowLeft } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Dòng Tin Mới Nhất 24/7',
   description: 'Dòng thời sự cập nhật từng phút các sự kiện trong nước và quốc tế nóng hổi nhất.',

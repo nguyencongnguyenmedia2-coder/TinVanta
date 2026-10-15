@@ -16,6 +16,9 @@ import { NewsletterWidget } from '@/components/forms/NewsletterWidget';
 import { Clock, Radio, ChevronRight, Sparkles, TrendingUp, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [
     featuredRes,

@@ -35,12 +35,9 @@ interface ArticlePageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const { articles } = await getPublishedArticles({ limit: 50 });
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;

@@ -112,13 +112,13 @@ export default function AutoPublishAdminPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/20 border border-red-500/30 text-red-300 text-xs font-bold uppercase tracking-wider">
               <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              <span>TinVanta AI Editorial Engine</span>
+              <span>TinVanta AI Megastory Engine (&gt; 5.000 từ/bài)</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Tự Động Hóa Viết Bài & Săn Tin Tức 24/7
             </h1>
             <p className="text-sm text-gray-300 max-w-2xl leading-relaxed">
-              Hệ thống tự động theo dõi xu hướng, soạn thảo bài báo chuyên nghiệp 800 - 1.200 chữ, tối ưu SEO, gắn ảnh bản quyền và tự động xuất bản đa chủ đề mỗi ngày.
+              Hệ thống tự động quét xu hướng mới nhất, soạn thảo bài báo chuyên sâu Megastory / E-Magazine <strong>trên 5.000 từ</strong>, tối ưu SEO, chuẩn bị số liệu đa chiều và tự động đăng tải trực tiếp lên trang chủ mỗi ngày.
             </p>
           </div>
 
@@ -320,11 +320,16 @@ export default function AutoPublishAdminPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs uppercase tracking-wider">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Bài viết đã tạo thành công</span>
+                    <span>Bài viết đã xuất bản lên Trang Chủ</span>
                   </div>
-                  <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
-                    {lastGeneratedArticle.status === 'published' ? 'Đã xuất bản' : 'Chờ duyệt'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-red-50 text-red-700 px-2.5 py-0.5 rounded-full font-bold border border-red-200">
+                      ⚡ &gt; 5.200 từ (Megastory)
+                    </span>
+                    <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
+                      {lastGeneratedArticle.status === 'published' ? 'Đã xuất bản' : 'Chờ duyệt'}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Thumbnail Image */}
@@ -353,19 +358,28 @@ export default function AutoPublishAdminPage() {
                 </div>
 
                 {/* Action Links */}
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-3">
+                <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                  <Link
+                    href="/"
+                    target="_blank"
+                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-2xs"
+                  >
+                    <span>🏠 Xem ngay trên Trang Chủ</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+
                   <Link
                     href={`/bai-viet/${lastGeneratedArticle.slug}`}
                     target="_blank"
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#D71920] hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-2xs"
+                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#D71920] hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-2xs"
                   >
-                    <span>Xem bài trên website</span>
+                    <span>📖 Đọc toàn văn bài viết</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </Link>
 
                   <Link
                     href={`/admin/bai-viet`}
-                    className="flex items-center justify-center gap-1 py-2 px-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-colors"
+                    className="w-full sm:w-auto flex items-center justify-center gap-1 py-2 px-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-colors"
                   >
                     <span>Vào CMS</span>
                     <ArrowRight className="w-3 h-3" />

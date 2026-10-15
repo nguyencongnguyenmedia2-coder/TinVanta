@@ -6,6 +6,7 @@ import {
   MOCK_SITE_SETTINGS, 
   MOCK_AD_CREATIVES 
 } from './mock-data';
+import { getStoredArticles } from './article-store';
 
 // Hàm kiểm tra xem Supabase credentials có hợp lệ hay đang ở chế độ mock/placeholder
 function isSupabaseConfigured(): boolean {
@@ -90,139 +91,151 @@ export async function getPublishedArticles(options: {
     orderAsc = false,
   } = options;
 
-  if (!isSupabaseConfigured()) {
-    let list = [...MOCK_ARTICLES].filter(a => a.status === 'published');
+  // Lấy các bài viết từ ổ đĩa (các bài AI tự động tạo) và Mock Articles
+  const diskArticles = getStoredArticles();
+  const basePool: Article[] = [];
+  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
 
-    if (excludeId) {
-      list = list.filter(a => a.id !== excludeId);
+  // 1. Ưu tiên bài mới nhất từ ổ đĩa
+  for (const art of diskArticles) {
+    if (art && art.slug && !seenSlugs.has(art.slug)) {
+      seenIds.add(art.id);
+      seenSlugs.add(art.slug);
+      basePool.push(art);
     }
-
-    if (categorySlug) {
-      list = list.filter(a => a.category?.slug === categorySlug);
-    }
-
-    if (tagSlug) {
-      list = list.filter(a => a.tags?.some(t => t.slug === tagSlug));
-    }
-
-    if (authorSlug) {
-      list = list.filter(a => a.author?.slug === authorSlug);
-    }
-
-    if (authorId) {
-      list = list.filter(a => a.author?.id === authorId);
-    }
-
-    if (featuredOnly) {
-      list = list.filter(a => a.is_featured);
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(a => 
-        a.title.toLowerCase().includes(q) || 
-        a.sapo.toLowerCase().includes(q)
-      );
-    }
-
-    if (orderBy === 'view_count') {
-      list.sort((a, b) => (orderAsc ? a.view_count - b.view_count : b.view_count - a.view_count));
-    } else {
-      list.sort((a, b) => {
-        const timeA = new Date(a.published_at || a.created_at).getTime();
-        const timeB = new Date(b.published_at || b.created_at).getTime();
-        return orderAsc ? timeA - timeB : timeB - timeA;
-      });
-    }
-
-    const total = list.length;
-    const paginated = list.slice(offset, offset + limit);
-    return { articles: paginated, total };
   }
 
-  try {
-    const supabase = getPublicSupabase();
-    let query = supabase
-      .from('articles')
-      .select(`
-        *,
-        category:categories(*),
-        featured_image:media_assets(*),
-        author:profiles(*)
-      `, { count: 'exact' })
-      .eq('status', 'published')
-      .is('deleted_at', null);
-
-    if (excludeId) {
-      query = query.neq('id', excludeId);
+  // 2. Thêm bài từ MOCK_ARTICLES
+  for (const art of MOCK_ARTICLES) {
+    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
+      seenIds.add(art.id);
+      seenSlugs.add(art.slug);
+      basePool.push(art);
     }
+  }
 
-    if (categorySlug) {
-      // Find category first or filter by relation
-      query = query.eq('primary_category_id', categorySlug);
-    }
+  // 3. Nếu Supabase cấu hình, truy vấn thêm từ database
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = getPublicSupabase();
+      let query = supabase
+        .from('articles')
+        .select(`
+          *,
+          category:categories(*),
+          featured_image:media_assets(*),
+          author:profiles(*)
+        `)
+        .eq('status', 'published')
+        .is('deleted_at', null);
 
-    if (featuredOnly) {
-      query = query.eq('is_featured', true);
-    }
-
-    if (searchQuery) {
-      query = query.textSearch('search_vector', searchQuery, { type: 'websearch' });
-    }
-
-    const sortCol = orderBy === 'view_count' ? 'view_count' : 'published_at';
-    query = query.order(sortCol, { ascending: orderAsc });
-
-    query = query.range(offset, offset + limit - 1);
-    const { data, count, error } = await query;
-
-    if (error || !data) {
-      let fallback = [...MOCK_ARTICLES].filter(a => a.status === 'published');
-      if (excludeId) fallback = fallback.filter(a => a.id !== excludeId);
-      if (orderBy === 'view_count') {
-        fallback.sort((a, b) => (orderAsc ? a.view_count - b.view_count : b.view_count - a.view_count));
+      if (categorySlug) {
+        query = query.eq('primary_category_id', categorySlug);
       }
-      return { articles: fallback.slice(offset, offset + limit), total: fallback.length };
-    }
+      if (featuredOnly) {
+        query = query.eq('is_featured', true);
+      }
 
-    return { articles: data as Article[], total: count || data.length };
-  } catch {
-    let fallback = [...MOCK_ARTICLES].filter(a => a.status === 'published');
-    if (excludeId) fallback = fallback.filter(a => a.id !== excludeId);
-    if (orderBy === 'view_count') {
-      fallback.sort((a, b) => (orderAsc ? a.view_count - b.view_count : b.view_count - a.view_count));
+      const { data } = await query;
+      if (data && Array.isArray(data)) {
+        for (const item of data as Article[]) {
+          if (item && item.slug && !seenSlugs.has(item.slug)) {
+            seenSlugs.add(item.slug);
+            basePool.push(item);
+          }
+        }
+      }
+    } catch {
+      // Supabase query error fallback smoothly
     }
-    return { articles: fallback.slice(offset, offset + limit), total: fallback.length };
   }
+
+  // 4. Lọc và phân trang trên danh sách tổng hợp
+  let list = basePool.filter(a => a.status === 'published');
+
+  if (excludeId) {
+    list = list.filter(a => a.id !== excludeId);
+  }
+
+  if (categorySlug) {
+    list = list.filter(a => a.category?.slug === categorySlug || a.primary_category_id === categorySlug);
+  }
+
+  if (tagSlug) {
+    list = list.filter(a => a.tags?.some(t => t.slug === tagSlug));
+  }
+
+  if (authorSlug) {
+    list = list.filter(a => a.author?.slug === authorSlug);
+  }
+
+  if (authorId) {
+    list = list.filter(a => a.author?.id === authorId || a.created_by === authorId);
+  }
+
+  if (featuredOnly) {
+    list = list.filter(a => a.is_featured);
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(a => 
+      a.title.toLowerCase().includes(q) || 
+      a.sapo.toLowerCase().includes(q)
+    );
+  }
+
+  if (orderBy === 'view_count') {
+    list.sort((a, b) => (orderAsc ? a.view_count - b.view_count : b.view_count - a.view_count));
+  } else {
+    list.sort((a, b) => {
+      const timeA = new Date(a.published_at || a.created_at).getTime();
+      const timeB = new Date(b.published_at || b.created_at).getTime();
+      return orderAsc ? timeA - timeB : timeB - timeA;
+    });
+  }
+
+  const total = list.length;
+  const paginated = list.slice(offset, offset + limit);
+  return { articles: paginated, total };
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  if (!isSupabaseConfigured()) {
-    return MOCK_ARTICLES.find(a => a.slug === slug) || null;
-  }
+  // 1. Kiểm tra trong bộ nhớ đĩa trước
+  const diskArticles = getStoredArticles();
+  const fromDisk = diskArticles.find(a => a.slug === slug);
+  if (fromDisk) return fromDisk;
 
-  try {
-    const supabase = getPublicSupabase();
-    const { data, error } = await supabase
-      .from('articles')
-      .select(`
-        *,
-        category:categories(*),
-        featured_image:media_assets(*),
-        author:profiles(*)
-      `)
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .single();
+  // 2. Kiểm tra trong Mock Articles
+  const fromMock = MOCK_ARTICLES.find(a => a.slug === slug);
+  if (fromMock) return fromMock;
 
-    if (error || !data) {
-      return MOCK_ARTICLES.find(a => a.slug === slug) || null;
+  // 3. Nếu cấu hình Supabase, tìm trong Supabase
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = getPublicSupabase();
+      const { data, error } = await supabase
+        .from('articles')
+        .select(`
+          *,
+          category:categories(*),
+          featured_image:media_assets(*),
+          author:profiles(*)
+        `)
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .single();
+
+      if (!error && data) {
+        return data as Article;
+      }
+    } catch {
+      // Fallback
     }
-
-    return data as Article;
-  } catch {
-    return MOCK_ARTICLES.find(a => a.slug === slug) || null;
   }
+
+  return null;
 }
 
 export async function getAdByPlacement(locationCode: string): Promise<AdCreative | null> {

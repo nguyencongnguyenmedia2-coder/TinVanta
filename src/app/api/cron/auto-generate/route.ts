@@ -30,6 +30,7 @@ export async function GET(request: Request) {
         title: result.article.title,
         slug: result.article.slug,
         category: result.article.category?.name,
+        wordCount: result.wordCount,
         published_at: result.article.published_at,
       },
     });

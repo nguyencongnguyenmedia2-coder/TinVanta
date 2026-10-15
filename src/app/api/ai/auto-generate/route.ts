@@ -19,6 +19,7 @@ export async function POST(request: Request) {
       success: true,
       article: result.article,
       source: result.source,
+      wordCount: result.wordCount,
       message: result.message,
     });
   } catch (error: unknown) {
