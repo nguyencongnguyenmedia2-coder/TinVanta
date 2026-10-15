@@ -1,5 +1,29 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/gia-xang-e10-giam-ve-sat-27-000-dong-mot-lit-5132689.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Giá xăng E10 giảm về sát 27.000 đồng một lít",
+    "articleId": "art-crawler-1792064695024-287",
+    "articleSlug": "nhan-dinh-moi-nhat-ve-gia-xang-e10-giam-ve-sat-27000-dong-mot-lit-5518",
+    "articleTitle": "Nhận định mới nhất về: Giá xăng E10 giảm về sát 27.000 đồng một lít",
+    "categorySlug": "kinh-te",
+    "wordCount": 1032,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T11:44:55.024Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792064694253.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T11:44:54.254Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/sacombank-phat-mai-tai-san-dam-bao-3-600-ty-dong-de-thu-hoi-no-cua-bamboo-airways-5132422.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "Sacombank phát mãi tài sản đảm bảo 3.600 tỷ đồng để thu hồi nợ của Bamboo Airways",

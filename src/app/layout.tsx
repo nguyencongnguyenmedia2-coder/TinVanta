@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { BreakingTicker } from '@/components/layout/BreakingTicker';
 import { DecreeConsentBanner } from '@/components/layout/DecreeConsentBanner';
 import { getCategories, getSiteSettings } from '@/lib/data/articles';
+import { BottomNavigation } from '@/components/layout/BottomNavigation';
 import { MainContentWrapper } from '@/components/layout/MainContentWrapper';
 import { Suspense } from 'react';
 
@@ -146,7 +147,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-white text-[#202124]">
+      <body className="min-h-full flex flex-col bg-white text-[#202124] pb-16 md:pb-0">
         <Suspense fallback={null}>
           {breakingEnabled && breakingText && (
             <BreakingTicker text={breakingText} link={breakingLink} />
@@ -167,6 +168,7 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <Footer categories={categories} />
           <DecreeConsentBanner />
+          <BottomNavigation categories={categories} />
         </Suspense>
       </body>
     </html>

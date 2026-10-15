@@ -1,11 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Category } from '@/types/database';
-import { Search, Menu, X, User, PhoneCall, Bookmark, CloudSun, Clock, Flame, Home } from 'lucide-react';
+import { 
+  Search, 
+  Menu, 
+  X, 
+  User, 
+  PhoneCall, 
+  Bookmark, 
+  CloudSun, 
+  Clock, 
+  Flame, 
+  Home, 
+  Zap,
+  Sparkles,
+  ChevronRight,
+  TrendingUp,
+  SlidersHorizontal
+} from 'lucide-react';
 import { formatDateVN } from '@/lib/utils';
 import { getStoredBookmarks } from '@/lib/bookmarks';
 
@@ -23,7 +39,7 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
   const [todayStr, setTodayStr] = useState("Thứ Năm, ngày 15/10/2026");
   const [bookmarkCount, setBookmarkCount] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTodayStr(formatDateVN(new Date(), "EEEE, 'ngày' dd/MM/yyyy"));
     setBookmarkCount(getStoredBookmarks().length);
 
@@ -46,12 +62,12 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-40 shadow-xs">
-      {/* 1. TOPBAR TIỆN ÍCH QUỐC GIA (Không lộ CMS) */}
+    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-40 shadow-2xs">
+      {/* 1. TOPBAR TIỆN ÍCH QUỐC GIA (DESKTOP) */}
       <div className="bg-[#172033] text-gray-300 text-xs py-1.5 px-4 hidden md:block border-b border-gray-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="capitalize text-gray-200">{todayStr}</span>
+            <span className="capitalize text-gray-200 font-medium">{todayStr}</span>
             <span className="text-gray-600">|</span>
             <span className="flex items-center gap-1.5 text-red-400 font-semibold">
               <PhoneCall className="w-3.5 h-3.5" />
@@ -65,16 +81,13 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
           </div>
 
           <div className="flex items-center gap-5 text-xs">
-            <Link href="/tin-moi-nhat" className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Tin mới 24/7</span>
-            </Link>
-            <Link href="/rss.xml" className="text-gray-400 hover:text-white transition-colors">
-              RSS Feed
+            <Link href="/tin-moi-nhat" className="flex items-center gap-1.5 text-amber-300 hover:text-white font-semibold transition-colors">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span>Tin Mới 24/7</span>
             </Link>
             <Link href="/tai-khoan/bai-da-luu" className="flex items-center gap-1.5 text-gray-300 hover:text-white transition-colors">
               <Bookmark className="w-3.5 h-3.5 text-red-400" />
-              <span>Bài đã lưu</span>
+              <span>Đã lưu</span>
               {bookmarkCount > 0 && (
                 <span className="bg-[#D71920] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
                   {bookmarkCount}
@@ -90,19 +103,20 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
       </div>
 
       {/* 2. BRANDING & INTEGRATED SEARCH BAR */}
-      <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5 flex items-center justify-between gap-3">
+        {/* Left: Mobile Menu Trigger & Logo */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <button 
             type="button"
-            className="md:hidden p-1.5 text-gray-700 hover:text-gray-900 focus:outline-none"
+            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label="Mở menu danh mục"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6 text-gray-800" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 text-red-600" /> : <Menu className="w-5 h-5 text-gray-800" />}
           </button>
 
           <Link href="/" className="group flex items-center">
-            <div className="relative h-12 w-48 sm:h-14 sm:w-56 lg:h-16 lg:w-64">
+            <div className="relative h-10 w-40 sm:h-12 sm:w-52 lg:h-14 lg:w-60">
               <Image
                 src="/logo-tinvanta-v2.png"
                 alt="TinVanta — Tin tức nhanh, thông tin chuẩn"
@@ -114,14 +128,14 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
           </Link>
         </div>
 
-        {/* Integrated Center Search for Desktop */}
+        {/* Center: Integrated Search for Desktop */}
         <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-lg mx-6">
           <div className="relative w-full">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm tin tức, sự kiện, bài phân tích chuyên sâu..."
+              placeholder="Tìm kiếm tin tức thời sự, kinh tế, công nghệ bán dẫn..."
               className="w-full bg-gray-50 hover:bg-gray-100/90 focus:bg-white pl-10 pr-24 py-2 border border-gray-200 rounded-full text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D71920]/25 focus:border-[#D71920] transition-all shadow-2xs"
             />
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-2.5" />
@@ -134,14 +148,23 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
           </div>
         </form>
 
-        {/* Right Reader Utilities (Thanh lịch & Chuyên nghiệp) */}
-        <div className="flex items-center gap-3">
+        {/* Right Reader Utilities (Mobile & Desktop) */}
+        <div className="flex items-center gap-2">
+          {/* Quick Hot Ticker Button on Mobile */}
+          <Link
+            href="/tin-moi-nhat"
+            className="md:hidden flex items-center gap-1 bg-red-50 text-[#D71920] px-2.5 py-1.5 rounded-full text-xs font-black"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping" />
+            <span>24/7</span>
+          </Link>
+
           {/* Mobile search trigger */}
           <button
             type="button"
             onClick={() => setSearchOpen(!searchOpen)}
             className="md:hidden p-2 rounded-full hover:bg-gray-100 text-gray-700 transition-colors"
-            aria-label="Tìm kiếm"
+            aria-label="Tìm kiếm bài viết"
           >
             <Search className="w-5 h-5" />
           </button>
@@ -164,7 +187,7 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
           {/* Reader Account Button */}
           <Link
             href="/tai-khoan/dang-nhap"
-            className="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-[#172033] text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all shadow-2xs"
+            className="hidden sm:inline-flex items-center gap-1.5 bg-[#172033] hover:bg-black text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all shadow-2xs"
           >
             <User className="w-3.5 h-3.5" />
             <span>Tài khoản</span>
@@ -174,14 +197,14 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
 
       {/* 3. MOBILE SEARCH EXPANDABLE BAR */}
       {searchOpen && (
-        <div className="md:hidden bg-gray-50 border-t border-b border-gray-200 px-4 py-3 animate-in fade-in duration-200">
+        <div className="md:hidden bg-gray-50 border-t border-b border-gray-200 px-3.5 py-2.5 animate-in fade-in duration-200">
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Nhập từ khóa tìm kiếm tin bài..."
+                placeholder="Nhập từ khóa tìm kiếm tin tức..."
                 className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#D71920] bg-white"
                 autoFocus
               />
@@ -189,7 +212,7 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
             </div>
             <button
               type="submit"
-              className="bg-[#D71920] hover:bg-[#b8141a] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+              className="bg-[#D71920] hover:bg-[#b8141a] text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-colors"
             >
               Tìm
             </button>
@@ -204,7 +227,53 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
         </div>
       )}
 
-      {/* 4. MAIN NAVIGATION (DESKTOP BAR SANG TRỌNG) */}
+      {/* 4. THANH TRƯỢT NGANG CHUYÊN MỤC TRÊN MOBILE (STICKY THUMB-FRIENDLY BAR) */}
+      <div className="md:hidden bg-white border-t border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
+        <div className="flex items-center gap-1 px-3 py-2 min-w-max">
+          <Link
+            href="/"
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+              pathname === '/'
+                ? 'bg-[#D71920] text-white shadow-xs'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Home className="w-3.5 h-3.5" />
+            <span>Mới nhất</span>
+          </Link>
+
+          <Link
+            href="/tin-moi-nhat"
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+              pathname === '/tin-moi-nhat'
+                ? 'bg-[#D71920] text-white shadow-xs'
+                : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
+            }`}
+          >
+            <Zap className="w-3 h-3 text-amber-600 fill-amber-600" />
+            <span>Tin nóng 24h</span>
+          </Link>
+
+          {categories.map((cat) => {
+            const isActive = pathname === `/chuyen-muc/${cat.slug}`;
+            return (
+              <Link
+                key={cat.id}
+                href={`/chuyen-muc/${cat.slug}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                  isActive
+                    ? 'bg-[#D71920] text-white shadow-xs'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {cat.name}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 5. MAIN NAVIGATION (DESKTOP BAR SANG TRỌNG) */}
       <nav className="bg-[#172033] border-t border-gray-800 hidden md:block">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center overflow-x-auto no-scrollbar">
@@ -252,42 +321,48 @@ export function Header({ categories, siteName = 'TinVanta', siteSlogan = 'Tin t�
         </div>
       </nav>
 
-      {/* 5. MOBILE DRAWER NAVIGATION (Không lộ CMS) */}
+      {/* 6. MOBILE DRAWER NAVIGATION MENU (KHI BẤM NÚT HAMBURGER) */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-200 shadow-lg">
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm tin bài..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#D71920]"
-            />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
-          </form>
+        <div className="md:hidden bg-white border-b border-gray-200 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-200 shadow-xl">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Chuyên mục tin tức
+            </span>
+            <span className="text-[11px] text-gray-400">
+              {categories.length} chuyên mục
+            </span>
+          </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+          <div className="grid grid-cols-2 gap-2 text-xs font-bold">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-1.5 p-2.5 rounded-lg bg-gray-50 text-gray-900 font-bold border border-gray-100"
+              className="flex items-center gap-1.5 p-2.5 rounded-lg bg-gray-50 text-gray-900 border border-gray-100"
             >
               <Home className="w-3.5 h-3.5 text-[#D71920]" />
               <span>Trang chủ</span>
+            </Link>
+            <Link
+              href="/tin-moi-nhat"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-1.5 p-2.5 rounded-lg bg-amber-50 text-amber-900 border border-amber-100"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-600" />
+              <span>Tin nóng 24/7</span>
             </Link>
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/chuyen-muc/${cat.slug}`}
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2.5 rounded-lg hover:bg-gray-50 text-gray-700 border border-transparent hover:border-gray-200"
+                className="p-2.5 rounded-lg hover:bg-gray-50 text-gray-700 border border-transparent hover:border-gray-200 transition-colors"
               >
                 {cat.name}
               </Link>
             ))}
           </div>
 
-          <div className="pt-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-600">
+          <div className="pt-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-600">
             <Link 
               href="/tai-khoan/bai-da-luu" 
               onClick={() => setMobileMenuOpen(false)}

@@ -199,7 +199,7 @@ export function FloatingArticleToolbar({
       </aside>
 
       {/* 2. MOBILE BOTTOM FLOATING ACTION BAR (THÂN THIỆN ĐIỆN THOẠI) */}
-      <div className="xl:hidden fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-full px-4 py-2 z-40 flex items-center justify-between text-xs max-w-md mx-auto">
+      <div className="xl:hidden fixed bottom-16 sm:bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/90 shadow-xl rounded-full px-4 py-2 z-40 flex items-center justify-between text-xs max-w-md mx-auto">
         <button
           type="button"
           onClick={handleLike}
