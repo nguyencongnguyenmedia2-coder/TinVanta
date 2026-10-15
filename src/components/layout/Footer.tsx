@@ -251,8 +251,8 @@ export function Footer({ categories }: FooterProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-gray-600 leading-relaxed">
             <div>
-              <p><strong>Chịu trách nhiệm nội dung:</strong> Nguyễn Tuấn Anh</p>
-              <p><strong>Phụ trách công nghệ & dữ liệu:</strong> Ban Kỹ thuật TinVanta</p>
+              <p><strong>Đơn vị vận hành:</strong> TinVanta Media Network</p>
+              <p><strong>Quản lý & Biên tập:</strong> Ban Biên Tập TinVanta</p>
             </div>
             <div>
               <p><strong>Đơn vị phát triển:</strong> TinVanta Media & Technology Network</p>
