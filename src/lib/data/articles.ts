@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getPublicSupabase } from '@/lib/supabase/server';
 import { Article, Category, AdCreative, SiteSettings } from '@/types/database';
 import { 
   MOCK_ARTICLES, 
@@ -24,7 +24,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = getPublicSupabase();
     const { data, error } = await supabase
       .from('site_settings')
       .select('*')
@@ -44,7 +44,7 @@ export async function getCategories(): Promise<Category[]> {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = getPublicSupabase();
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -141,7 +141,7 @@ export async function getPublishedArticles(options: {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = getPublicSupabase();
     let query = supabase
       .from('articles')
       .select(`
@@ -151,7 +151,6 @@ export async function getPublishedArticles(options: {
         author:profiles(*)
       `, { count: 'exact' })
       .eq('status', 'published')
-      .lte('published_at', new Date().toISOString())
       .is('deleted_at', null);
 
     if (excludeId) {
@@ -203,7 +202,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = getPublicSupabase();
     const { data, error } = await supabase
       .from('articles')
       .select(`

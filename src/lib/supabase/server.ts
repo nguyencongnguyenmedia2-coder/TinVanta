@@ -1,5 +1,22 @@
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseJsClient, SupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+
+let publicSupabaseInstance: SupabaseClient | null = null;
+
+export function getPublicSupabase(): SupabaseClient {
+  if (!publicSupabaseInstance) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+    publicSupabaseInstance = createSupabaseJsClient(url, key, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  }
+  return publicSupabaseInstance;
+}
 
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
