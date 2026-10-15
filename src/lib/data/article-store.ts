@@ -72,3 +72,37 @@ export function saveArticleToDisk(article: Article): void {
     console.error('Lỗi ghi articles-store.json:', error);
   }
 }
+
+/**
+ * Cập nhật trạng thái hoặc ngày giờ xuất bản của một bài viết đã lưu
+ */
+export function updateArticleInStore(
+  articleIdOrSlug: string, 
+  updates: Partial<Article>
+): Article | null {
+  try {
+    const filePath = getStoragePath();
+    const list = getStoredArticles();
+    const index = list.findIndex(a => a.id === articleIdOrSlug || a.slug === articleIdOrSlug);
+    
+    if (index === -1) return null;
+
+    list[index] = {
+      ...list[index],
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
+
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf-8');
+    return list[index];
+  } catch (error) {
+    console.error('Lỗi cập nhật articles-store.json:', error);
+    return null;
+  }
+}
+

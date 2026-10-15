@@ -12,7 +12,9 @@ export async function POST(request: Request) {
       categorySlug = 'all', 
       status = 'published', 
       aiProvider = 'auto',
-      isBreaking = false 
+      isBreaking = false,
+      batchCount = 1,
+      customPublishedAt,
     } = body;
 
     const result = await crawlRewriteAndPublish({
@@ -22,11 +24,14 @@ export async function POST(request: Request) {
       status,
       aiProvider,
       isBreaking,
+      batchCount: Number(batchCount) || 1,
+      customPublishedAt,
     });
 
     return NextResponse.json({
       success: true,
       article: result.article,
+      articles: result.articles || [result.article],
       sourceInfo: result.sourceInfo,
       aiInfo: result.aiInfo,
       message: result.message,

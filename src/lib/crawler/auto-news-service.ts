@@ -25,11 +25,14 @@ export interface AutoCrawlOptions {
   status?: 'published' | 'pending_review';
   aiProvider?: 'auto' | 'pollinations_free' | 'gemini_free' | 'smart_synthesizer';
   isBreaking?: boolean;
+  batchCount?: number; // Số lượng bài cần cào (1 - 10 bài)
+  customPublishedAt?: string; // Tùy chỉnh ngày giờ đăng bài
 }
 
 export interface AutoCrawlResult {
   success: boolean;
   article: Article;
+  articles?: Article[];
   sourceInfo: {
     originalUrl: string;
     originalTitle: string;
@@ -69,86 +72,29 @@ const CATEGORY_DEFAULT_IMAGES: Record<string, string> = {
 };
 
 /**
- * Hàm điều phối toàn diện: Tự động cào tin từ báo chí khác, viết lại bằng AI và xuất bản lên TinVanta
+ * Xử lý cào và viết lại cho một bài viết đơn lẻ
  */
-export async function crawlRewriteAndPublish(
-  options: AutoCrawlOptions = {}
-): Promise<AutoCrawlResult> {
-  const {
-    customUrl,
-    sourceId = 'all',
-    categorySlug = 'all',
-    status = 'published',
-    aiProvider = 'auto',
-    isBreaking = false,
-  } = options;
-
-  let targetArticle: ExtractedArticle | null = null;
-
-  // ========================================================
-  // BƯỚC 1: XÁC ĐỊNH BÀI BÁO GỐC ĐỂ CÀO
-  // ========================================================
-  if (customUrl && customUrl.trim().startsWith('http')) {
-    // 1A. Người dùng dán link cụ thể từ một trang báo bất kỳ
-    targetArticle = await extractArticleDetails(customUrl.trim(), categorySlug !== 'all' ? categorySlug : 'thoi-su');
-    if (!targetArticle) {
-      throw new Error(`Không thể trích xuất dữ liệu từ đường dẫn: ${customUrl}. Vui lòng kiểm tra lại liên kết.`);
-    }
-  } else {
-    // 1B. Quét tự động từ các nguồn RSS của các báo lớn
-    const feedItems: CrawledFeedItem[] = await scanNewsFeeds({
-      sourceId,
-      categorySlug: categorySlug !== 'all' ? categorySlug : undefined,
-      limitPerFeed: 8,
-    });
-
-    if (feedItems.length === 0) {
-      throw new Error('Không tìm thấy bản tin nào từ các nguồn báo chí. Vui lòng thử lại sau.');
-    }
-
-    // Lọc ra các bài chưa từng cào (chống trùng lặp)
-    const uncrawledItems = feedItems.filter(item => !isUrlAlreadyCrawled(item.link));
-
-    // Nếu tất cả bài đều đã cào, lấy bài mới nhất trong danh sách
-    const selectedItem = uncrawledItems.length > 0
-      ? uncrawledItems[0]
-      : feedItems[0];
-
-    // Trích xuất toàn bộ nội dung từ trang bài viết gốc
-    targetArticle = await extractArticleDetails(selectedItem.link, selectedItem.categorySlug);
-
-    // Nếu không bóc tách được chi tiết, dùng thông tin tóm tắt từ RSS
-    if (!targetArticle) {
-      targetArticle = {
-        url: selectedItem.link,
-        originalTitle: selectedItem.title,
-        sapo: selectedItem.description,
-        bodyParagraphs: [selectedItem.description],
-        rawText: selectedItem.description,
-        imageUrl: selectedItem.imageUrl,
-        sourceDomain: selectedItem.sourceDomain,
-        sourceName: selectedItem.sourceName,
-        categorySlug: selectedItem.categorySlug,
-      };
-    }
+async function processSingleArticle(
+  targetArticle: ExtractedArticle,
+  options: {
+    status: 'published' | 'pending_review';
+    aiProvider: 'auto' | 'pollinations_free' | 'gemini_free' | 'smart_synthesizer';
+    isBreaking: boolean;
+    publishDate: string;
   }
+): Promise<Article> {
+  const { status, aiProvider, isBreaking, publishDate } = options;
 
-  // ========================================================
-  // BƯỚC 2: XÁC ĐỊNH CHUYÊN MỤC & TÁC GIẢ
-  // ========================================================
   let matchedCategory: Category | undefined;
   if (targetArticle.categorySlug && targetArticle.categorySlug !== 'all') {
-    matchedCategory = MOCK_CATEGORIES.find(c => c.slug === targetArticle?.categorySlug);
+    matchedCategory = MOCK_CATEGORIES.find(c => c.slug === targetArticle.categorySlug);
   }
   if (!matchedCategory) {
-    matchedCategory = MOCK_CATEGORIES[0]; // Mặc định Thời sự
+    matchedCategory = MOCK_CATEGORIES[0];
   }
 
   const author: Profile = MOCK_AUTHORS[Math.floor(Math.random() * MOCK_AUTHORS.length)];
 
-  // ========================================================
-  // BƯỚC 3: DÙNG AI MIỄN PHÍ VIẾT LẠI HOÀN TOÀN
-  // ========================================================
   const rewritten: RewrittenArticleResult = await rewriteCrawledArticle(
     targetArticle,
     matchedCategory.name,
@@ -158,14 +104,10 @@ export async function crawlRewriteAndPublish(
   const cleanSlug = generateCleanSlug(rewritten.title);
   const now = new Date().toISOString();
   const readingTime = Math.max(4, Math.ceil(rewritten.wordCount / 220));
-  const articleId = `art-crawler-${Date.now()}`;
+  const articleId = `art-crawler-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-  // Ảnh đại diện bài viết
   const finalImageUrl = targetArticle.imageUrl || CATEGORY_DEFAULT_IMAGES[matchedCategory.slug] || CATEGORY_DEFAULT_IMAGES['thoi-su'];
 
-  // ========================================================
-  // BƯỚC 4: TẠO THỰC THỂ ARTICLE CHUẨN CƠ SỞ DỮ LIỆU
-  // ========================================================
   const newArticle: Article = {
     id: articleId,
     title: rewritten.title,
@@ -175,7 +117,7 @@ export async function crawlRewriteAndPublish(
     primary_category_id: matchedCategory.id,
     status,
     version: 1,
-    published_at: now,
+    published_at: publishDate,
     reading_time_minutes: readingTime,
     is_featured: false,
     is_breaking: isBreaking,
@@ -198,7 +140,7 @@ export async function crawlRewriteAndPublish(
       created_at: now,
     })),
     featured_image: {
-      id: `media-crawl-${Date.now()}`,
+      id: `media-crawl-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       filename: `${cleanSlug}.jpg`,
       storage_path: `crawled/${cleanSlug}.jpg`,
       public_url: finalImageUrl,
@@ -213,13 +155,9 @@ export async function crawlRewriteAndPublish(
     },
   };
 
-  // ========================================================
-  // BƯỚC 5: LƯU TRỮ VÀ XUẤT BẢN NGAY LÊN WEBSITE
-  // ========================================================
   saveArticleToDisk(newArticle);
   addDynamicArticle(newArticle);
 
-  // Ghi nhận vào lịch sử cào tin tức để chống trùng lặp
   recordCrawledArticle({
     sourceUrl: targetArticle.url,
     sourceDomain: targetArticle.sourceDomain,
@@ -233,7 +171,6 @@ export async function crawlRewriteAndPublish(
     crawledAt: now,
   });
 
-  // Ghi vào Supabase Database nếu cấu hình
   try {
     const supabase = createAdminClient();
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -259,23 +196,140 @@ export async function crawlRewriteAndPublish(
       created_by: authId,
     });
   } catch {
-    // Không chặn luồng nếu Supabase RLS giới hạn
+    // Ignored
   }
+
+  return newArticle;
+}
+
+/**
+ * Hàm điều phối toàn diện: Tự động cào tin từ báo chí khác, hỗ trợ cào hàng loạt và tùy chỉnh ngày đăng
+ */
+export async function crawlRewriteAndPublish(
+  options: AutoCrawlOptions = {}
+): Promise<AutoCrawlResult> {
+  const {
+    customUrl,
+    sourceId = 'all',
+    categorySlug = 'all',
+    status = 'published',
+    aiProvider = 'auto',
+    isBreaking = false,
+    batchCount = 1,
+    customPublishedAt,
+  } = options;
+
+  const countToCrawl = Math.min(Math.max(1, batchCount), 10);
+
+  // ========================================================
+  // TRƯỜNG HỢP 1: CÀO THEO LINK TÙY CHỌN (CUSTOM URL)
+  // ========================================================
+  if (customUrl && customUrl.trim().startsWith('http')) {
+    const targetArticle = await extractArticleDetails(customUrl.trim(), categorySlug !== 'all' ? categorySlug : 'thoi-su');
+    if (!targetArticle) {
+      throw new Error(`Không thể trích xuất dữ liệu từ đường dẫn: ${customUrl}. Vui lòng kiểm tra lại liên kết.`);
+    }
+
+    const publishDate = customPublishedAt || new Date().toISOString();
+    const article = await processSingleArticle(targetArticle, {
+      status,
+      aiProvider,
+      isBreaking,
+      publishDate,
+    });
+
+    return {
+      success: true,
+      article,
+      articles: [article],
+      sourceInfo: {
+        originalUrl: targetArticle.url,
+        originalTitle: targetArticle.originalTitle,
+        sourceDomain: targetArticle.sourceDomain,
+        sourceName: targetArticle.sourceName,
+      },
+      aiInfo: {
+        provider: aiProvider,
+        wordCount: Math.round(article.content_html.length / 5),
+        readingTimeMinutes: article.reading_time_minutes,
+      },
+      message: status === 'published'
+        ? `Đã cào thành công bài viết từ ${targetArticle.sourceName}, AI đã viết lại và tự động đăng lên trang chủ!`
+        : `Đã cào thành công bài viết từ ${targetArticle.sourceName}, AI đã viết xong và lưu vào danh sách chờ admin duyệt!`,
+    };
+  }
+
+  // ========================================================
+  // TRƯỜNG HỢP 2: TỰ ĐỘNG QUÉT RSS BÁO CHÍ (HỖ TRỢ NHIỀU BÀI)
+  // ========================================================
+  const feedItems: CrawledFeedItem[] = await scanNewsFeeds({
+    sourceId,
+    categorySlug: categorySlug !== 'all' ? categorySlug : undefined,
+    limitPerFeed: Math.max(10, countToCrawl * 3),
+  });
+
+  if (feedItems.length === 0) {
+    throw new Error('Không tìm thấy bản tin nào từ các nguồn báo chí. Vui lòng thử lại sau.');
+  }
+
+  // Lọc bài chưa từng cào (chống trùng lặp)
+  const uncrawledItems = feedItems.filter(item => !isUrlAlreadyCrawled(item.link));
+  const candidateItems = uncrawledItems.length >= countToCrawl 
+    ? uncrawledItems.slice(0, countToCrawl)
+    : [...uncrawledItems, ...feedItems.filter(item => isUrlAlreadyCrawled(item.link))].slice(0, countToCrawl);
+
+  const processedArticles: Article[] = [];
+  const baseTime = customPublishedAt ? new Date(customPublishedAt).getTime() : Date.now();
+
+  for (let i = 0; i < candidateItems.length; i++) {
+    const item = candidateItems[i];
+    let extracted = await extractArticleDetails(item.link, item.categorySlug);
+    if (!extracted) {
+      extracted = {
+        url: item.link,
+        originalTitle: item.title,
+        sapo: item.description,
+        bodyParagraphs: [item.description],
+        rawText: item.description,
+        imageUrl: item.imageUrl,
+        sourceDomain: item.sourceDomain,
+        sourceName: item.sourceName,
+        categorySlug: item.categorySlug,
+      };
+    }
+
+    // Thời gian đăng: Giãn cách 2 phút giữa các bài nếu cào nhiều bài
+    const itemPublishDate = new Date(baseTime - i * 120000).toISOString();
+
+    const art = await processSingleArticle(extracted, {
+      status,
+      aiProvider,
+      isBreaking,
+      publishDate: itemPublishDate,
+    });
+    processedArticles.push(art);
+  }
+
+  const primaryArticle = processedArticles[0];
+  const totalWords = processedArticles.reduce((sum, a) => sum + (a.reading_time_minutes * 220), 0);
 
   return {
     success: true,
-    article: newArticle,
+    article: primaryArticle,
+    articles: processedArticles,
     sourceInfo: {
-      originalUrl: targetArticle.url,
-      originalTitle: targetArticle.originalTitle,
-      sourceDomain: targetArticle.sourceDomain,
-      sourceName: targetArticle.sourceName,
+      originalUrl: candidateItems[0].link,
+      originalTitle: candidateItems[0].title,
+      sourceDomain: candidateItems[0].sourceDomain,
+      sourceName: candidateItems[0].sourceName,
     },
     aiInfo: {
-      provider: rewritten.aiProvider,
-      wordCount: rewritten.wordCount,
-      readingTimeMinutes: readingTime,
+      provider: aiProvider,
+      wordCount: totalWords,
+      readingTimeMinutes: primaryArticle.reading_time_minutes,
     },
-    message: `Đã cào thành công bài viết từ ${targetArticle.sourceName}, AI đã viết lại bài độc quyền "${newArticle.title}" (${rewritten.wordCount} từ) và tự động đăng lên trang chủ!`,
+    message: status === 'published'
+      ? `Đã cào và viết lại thành công ${processedArticles.length} bài báo mới, tự động đăng tải trực tiếp lên trang chủ!`
+      : `Đã cào và viết lại thành công ${processedArticles.length} bài báo mới, hiện đang lưu ở trạng thái chờ admin duyệt đăng!`,
   };
 }

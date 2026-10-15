@@ -1,5 +1,41 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/ong-lon-cang-bien-hai-phong-nam-giu-hon-1-von-eximbank-5132761.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "'Ông lớn' cảng biển Hải Phòng nắm giữ hơn 1% vốn Eximbank",
+    "articleId": "art-crawler-1792061917111-304",
+    "articleSlug": "goc-nhin-da-chieu-ong-lon-cang-bien-hai-phong-nam-giu-hon-1percent-von-eximbank-6076",
+    "articleTitle": "Góc nhìn đa chiều: 'Ông lớn' cảng biển Hải Phòng nắm giữ hơn 1% vốn Eximbank",
+    "categorySlug": "kinh-te",
+    "wordCount": 798,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:58:37.111Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792061916509.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:58:36.512Z"
+  },
+  {
+    "sourceUrl": "https://vnexpress.net/thanh-nien-xung-phong-o-mien-nam-duoc-tang-gap-doi-tro-cap-5132809.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Thanh niên xung phong ở miền Nam được tăng gấp đôi trợ cấp",
+    "articleId": "art-crawler-1792061716534",
+    "articleSlug": "tang-gap-doi-tro-cap-cuu-thanh-nien-xung-phong-mien-nam-108-trieu-dong-thang-4860",
+    "articleTitle": "Tăng gấp đôi trợ cấp cựu thanh niên xung phong miền Nam: 1,08 triệu đồng/ tháng",
+    "categorySlug": "thoi-su",
+    "wordCount": 458,
+    "aiProvider": "pollinations_free",
+    "crawledAt": "2026-10-15T10:55:16.534Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/gia-xang-dau-moi-nhat-hom-nay-15-10-5132689.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "Giá xăng E10 giảm về sát 27.000 đồng một lít",
