@@ -292,6 +292,27 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 }
 
 export async function getAdByPlacement(locationCode: string): Promise<AdCreative | null> {
-  const ad = MOCK_AD_CREATIVES.find(a => a.placement_id === locationCode && a.is_active);
-  return ad || null;
+  try {
+    const { getAllCombinedAds } = await import('./ad-store');
+    const ads = getAllCombinedAds();
+    const cleanCode = (locationCode || '').trim().toLowerCase();
+    
+    // Tìm kiếm banner đang hoạt động khớp mã vị trí (hoặc mã tương đương)
+    const ad = ads.find(a => {
+      if (!a.is_active) return false;
+      const p = (a.placement_id || '').toLowerCase();
+      if (p === cleanCode) return true;
+      if (cleanCode === 'header_top' && (p === 'homepage_top' || p === 'pl-home-top')) return true;
+      if (cleanCode === 'sidebar_top' && (p === 'article_sidebar' || p === 'pl-art-side')) return true;
+      if (cleanCode === 'sidebar_sticky' && (p === 'sidebar_top' || p === 'article_sidebar')) return true;
+      return false;
+    });
+
+    if (ad) return ad;
+  } catch {
+    // Fallback
+  }
+
+  const fallback = MOCK_AD_CREATIVES.find(a => a.placement_id === locationCode && a.is_active);
+  return fallback || null;
 }

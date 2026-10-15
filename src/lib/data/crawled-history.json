@@ -1,5 +1,29 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/dien-may-xanh-tim-nhan-su-dan-dat-nganh-robotics-ai-5132364.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Điện Máy Xanh tìm nhân sự dẫn dắt ngành robotics, AI",
+    "articleId": "art-crawler-1792067899665-810",
+    "articleSlug": "goc-nhin-da-chieu-dien-may-xanh-tim-nhan-su-dan-dat-nganh-robotics-ai-3039",
+    "articleTitle": "Góc nhìn đa chiều: Điện Máy Xanh tìm nhân sự dẫn dắt ngành robotics, AI",
+    "categorySlug": "kinh-te",
+    "wordCount": 1129,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:38:19.665Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792067898883.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T12:38:18.885Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/iea-the-gioi-co-nguy-co-thieu-dau-diesel-den-giua-nam-2027-5132344.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "IEA: Thế giới có nguy cơ thiếu dầu diesel đến giữa năm 2027",
