@@ -25,7 +25,8 @@ import {
   Check,
   Zap,
   Save,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Article } from '@/types/database';
 
@@ -856,6 +857,22 @@ export default function AutoPublishAdminPage() {
                 <li><strong>Đăng tự động:</strong> Bài xuất hiện ngay trên trang chủ sau khi AI viết xong.</li>
                 <li><strong>Đăng thủ công:</strong> Bài nằm ở trạng thái chờ duyệt. Bạn có thể đọc lại, chỉnh sửa tiêu đề/ngày giờ rồi bấm <em>&quot;Bấm Đăng Ngay Lên Web&quot;</em>.</li>
               </ul>
+              <div className="pt-2 border-t border-blue-200/60 flex items-center gap-3">
+                <Link
+                  href="/admin/bai-viet"
+                  className="font-bold text-red-700 hover:text-red-900 hover:underline flex items-center gap-1 text-[11px]"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  Mở trang Quản lý bài viết CMS →
+                </Link>
+                <Link
+                  href="/admin/media"
+                  className="font-bold text-blue-700 hover:text-blue-900 hover:underline flex items-center gap-1 text-[11px]"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  Thư viện hình ảnh Media →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { TipTapEditor } from '@/components/editor/TipTapEditor';
-import { MOCK_ARTICLES, MOCK_CATEGORIES } from '@/lib/data/mock-data';
+import { MOCK_CATEGORIES } from '@/lib/data/mock-data';
 import { 
   ArrowLeft, 
   Save, 
@@ -14,33 +14,112 @@ import {
   AlertCircle,
   FileCheck,
   History,
-  RotateCcw
+  RotateCcw,
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import { Suspense } from 'react';
-import { ArticleStatus } from '@/types/database';
+import { Article, ArticleStatus } from '@/types/database';
 
 function EditArticleInner() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
 
-  const article = MOCK_ARTICLES.find(a => a.id === id) || MOCK_ARTICLES[0];
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [article, setArticle] = useState<Article | null>(null);
 
-  const [title, setTitle] = useState(article.title);
-  const [slug, setSlug] = useState(article.slug);
-  const [sapo, setSapo] = useState(article.sapo);
-  const [contentHtml, setContentHtml] = useState(article.content_html);
-  const [status, setStatus] = useState<ArticleStatus>(article.status);
-  const [categoryId, setCategoryId] = useState(article.primary_category_id);
-  const [version, setVersion] = useState(article.version);
+  const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
+  const [sapo, setSapo] = useState('');
+  const [contentHtml, setContentHtml] = useState('');
+  const [status, setStatus] = useState<ArticleStatus>('draft');
+  const [categoryId, setCategoryId] = useState(MOCK_CATEGORIES[0]?.id || '');
+  const [version, setVersion] = useState(1);
   const [notification, setNotification] = useState<string | null>(null);
 
-  const handleStatusChange = (newStatus: ArticleStatus) => {
-    setStatus(newStatus);
-    setVersion(v => v + 1);
-    setNotification(`Trạng thái bài viết đã cập nhật: ${newStatus.toUpperCase()}`);
+  // Load article data from unified API
+  useEffect(() => {
+    async function loadArticle() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/articles`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.articles)) {
+          const found = data.articles.find((a: Article) => a.id === id || a.slug === id);
+          if (found) {
+            setArticle(found);
+            setTitle(found.title || '');
+            setSlug(found.slug || '');
+            setSapo(found.sapo || '');
+            setContentHtml(found.content_html || '');
+            setStatus(found.status || 'draft');
+            setCategoryId(found.primary_category_id || MOCK_CATEGORIES[0]?.id || '');
+            setVersion(found.version || 1);
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi nạp bài viết:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (id) {
+      loadArticle();
+    }
+  }, [id]);
+
+  const showToast = (msg: string) => {
+    setNotification(msg);
     setTimeout(() => setNotification(null), 3000);
   };
+
+  const handleSave = async (targetStatus?: ArticleStatus) => {
+    const finalStatus = targetStatus || status;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/articles', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          title,
+          sapo,
+          content_html: contentHtml,
+          category_id: categoryId,
+          status: finalStatus,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setStatus(finalStatus);
+        setVersion(v => v + 1);
+        showToast(
+          finalStatus === 'published' 
+            ? 'Đã duyệt & xuất bản bài viết thành công!' 
+            : 'Đã lưu bản cập nhật bài viết thành công!'
+        );
+      } else {
+        alert(data.error || 'Có lỗi xảy ra khi cập nhật.');
+      }
+    } catch {
+      alert('Không thể kết nối đến máy chủ.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-12 text-center text-gray-500 text-xs flex items-center justify-center gap-2">
+        <Loader2 className="w-5 h-5 animate-spin text-[#D71920]" />
+        Đang nạp dữ liệu bài viết #{id}...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
@@ -58,41 +137,55 @@ function EditArticleInner() {
               Biên Tập Bài Viết & Phê Duyệt
             </h1>
             <p className="text-xs text-gray-400">
-              Mã bài: <span className="font-mono text-gray-600">{id}</span> • Phiên bản: v{version}
+              Mã bài: <span className="font-mono text-gray-600">{id}</span> • Phiên bản: v{version} • 
+              Trạng thái: <strong className="text-gray-700 uppercase">{status}</strong>
             </p>
           </div>
         </div>
 
         {/* Workflow Transition Buttons */}
         <div className="flex flex-wrap items-center gap-2">
+          {slug && status === 'published' && (
+            <Link
+              href={`/bai-viet/${slug}`}
+              target="_blank"
+              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Xem trên web
+            </Link>
+          )}
+
           {status === 'pending_review' && (
-            <>
-              <button
-                type="button"
-                onClick={() => handleStatusChange('changes_requested')}
-                className="px-3.5 py-2 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Yêu cầu sửa bài
-              </button>
-              <button
-                type="button"
-                onClick={() => handleStatusChange('approved')}
-                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
-              >
-                <FileCheck className="w-4 h-4" />
-                Phê duyệt
-              </button>
-            </>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => handleSave('draft')}
+              className="px-3.5 py-2 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Trả về nháp
+            </button>
           )}
 
           <button
             type="button"
-            onClick={() => handleStatusChange('published')}
+            disabled={saving}
+            onClick={() => handleSave('draft')}
+            className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors"
+          >
+            <Save className="w-4 h-4" />
+            Lưu nháp
+          </button>
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => handleSave('published')}
             className="px-4 py-2 bg-[#D71920] hover:bg-[#b8141a] text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
           >
-            <CheckCircle2 className="w-4 h-4" />
-            Cập nhật & Xuất bản
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+            {status === 'published' ? 'Lưu thay đổi' : 'Duyệt & Xuất bản'}
           </button>
         </div>
       </div>
@@ -134,7 +227,7 @@ function EditArticleInner() {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">
-                Nội dung TipTap
+                Nội dung bài viết
               </label>
               <TipTapEditor content={contentHtml} onChange={setContentHtml} />
             </div>
@@ -152,7 +245,7 @@ function EditArticleInner() {
               <span>Phiên bản hiện tại: <strong>v{version}</strong></span>
             </div>
             <p className="text-[11px] text-gray-400">
-              Tự động lưu lịch sử sửa đổi giúp phục hồi nội dung khi có tranh chấp bản quyền hoặc đính chính bài viết.
+              Mọi thay đổi được đồng bộ vào hệ thống tòa soạn và lưu trữ để theo dõi quy trình xuất bản.
             </p>
           </div>
 
@@ -172,6 +265,19 @@ function EditArticleInner() {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Trạng thái xuất bản</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as ArticleStatus)}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-xs font-bold"
+              >
+                <option value="draft">Bản nháp (Draft)</option>
+                <option value="pending_review">Chờ duyệt (Pending Review)</option>
+                <option value="published">Xuất bản công khai (Published)</option>
+              </select>
+            </div>
           </div>
         </aside>
       </div>
@@ -181,7 +287,7 @@ function EditArticleInner() {
 
 export default function EditArticlePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-400">Đang tải trình biên tập bài viết...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-gray-400 text-xs">Đang tải trình biên tập bài viết...</div>}>
       <EditArticleInner />
     </Suspense>
   );

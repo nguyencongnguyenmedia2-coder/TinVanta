@@ -108,7 +108,7 @@ function AdminLayoutInner({ children }: AdminLayoutClientProps) {
               Phân hệ tòa soạn
             </div>
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
               const Icon = item.icon;
               return (
                 <Link

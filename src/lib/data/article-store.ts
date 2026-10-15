@@ -106,3 +106,69 @@ export function updateArticleInStore(
   }
 }
 
+/**
+ * Xóa một bài viết khỏi bộ nhớ đĩa
+ */
+export function deleteArticleFromStore(articleIdOrSlug: string): boolean {
+  try {
+    const filePath = getStoragePath();
+    const list = getStoredArticles();
+    const filtered = list.filter(a => a.id !== articleIdOrSlug && a.slug !== articleIdOrSlug);
+    
+    if (filtered.length === list.length) {
+      // Nếu không tìm thấy trong store (có thể là mock article), lưu một bản đánh dấu xóa hoặc return true
+      return false;
+    }
+
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(filePath, JSON.stringify(filtered, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error('Lỗi xóa bài trong articles-store.json:', error);
+    return false;
+  }
+}
+
+/**
+ * Lấy danh sách toàn bộ bài viết hợp nhất (Store đĩa + Mock articles ban đầu),
+ * tự động loại bỏ trùng lặp và sắp xếp theo ngày giờ mới nhất
+ */
+export function getAllCombinedArticles(): Article[] {
+  const diskArticles = getStoredArticles();
+  const { MOCK_ARTICLES } = require('./mock-data');
+
+  const combined: Article[] = [];
+  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
+
+  // Ưu tiên bài trong store đĩa (các bài do AI cào hoặc do người dùng tạo/sửa)
+  for (const art of diskArticles) {
+    if (art && art.slug && !seenSlugs.has(art.slug)) {
+      seenIds.add(art.id);
+      seenSlugs.add(art.slug);
+      combined.push(art);
+    }
+  }
+
+  // Bổ sung các bài từ MOCK_ARTICLES nếu chưa có trong store
+  for (const art of MOCK_ARTICLES) {
+    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
+      seenIds.add(art.id);
+      seenSlugs.add(art.slug);
+      combined.push(art);
+    }
+  }
+
+  // Sắp xếp thời gian mới nhất lên đầu
+  combined.sort((a, b) => {
+    const timeA = new Date(a.published_at || a.created_at || 0).getTime();
+    const timeB = new Date(b.published_at || b.created_at || 0).getTime();
+    return timeB - timeA;
+  });
+
+  return combined;
+}

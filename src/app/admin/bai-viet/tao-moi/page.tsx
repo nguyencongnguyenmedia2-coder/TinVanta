@@ -108,22 +108,50 @@ function CreateArticleInner() {
     setIsSubmitting(true);
     setStatusMessage(null);
 
-    // Giả lập lưu bài thành công (Trong thực tế gọi server action/endpoint Supabase)
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setStatusMessage({
-        type: 'success',
-        text: status === 'published' 
-          ? 'Bài viết đã được xuất bản thành công lên website!' 
-          : status === 'pending_review'
-          ? 'Bài viết đã được nộp vào hàng đợi chờ Ban Biên Tập duyệt.'
-          : 'Đã lưu bản nháp thành công.',
+    try {
+      const res = await fetch('/api/admin/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          sapo,
+          content_html: contentHtml,
+          category_id: categoryId,
+          status,
+          featured_image_url: imageUrl,
+          is_featured: isFeatured,
+          is_breaking: isBreaking,
+        }),
       });
 
-      setTimeout(() => {
-        router.push('/admin/bai-viet');
-      }, 1500);
-    }, 600);
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setStatusMessage({
+          type: 'success',
+          text: status === 'published' 
+            ? 'Bài viết đã được xuất bản thành công lên website!' 
+            : status === 'pending_review'
+            ? 'Bài viết đã được nộp vào hàng đợi chờ Ban Biên Tập duyệt.'
+            : 'Đã lưu bản nháp thành công.',
+        });
+
+        setTimeout(() => {
+          router.push('/admin/bai-viet');
+        }, 1200);
+      } else {
+        setStatusMessage({
+          type: 'error',
+          text: data.error || 'Có lỗi xảy ra khi lưu bài viết.',
+        });
+      }
+    } catch (err: any) {
+      setStatusMessage({
+        type: 'error',
+        text: 'Không thể kết nối đến máy chủ tòa soạn.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
