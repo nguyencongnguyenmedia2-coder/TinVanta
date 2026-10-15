@@ -209,6 +209,61 @@ export function parseRssXml(
 }
 
 /**
+ * Kiểm tra xem một đoạn văn có phải là rác, mã JavaScript, CSS hay điều hướng hay không
+ */
+export function isCleanVietnameseParagraph(text: string): boolean {
+  if (!text || text.length < 35 || text.length > 2500) return false;
+
+  // 1. Chặn các token mã lệnh JavaScript / CSS
+  const codeKeywords = [
+    '{', '}', 'function(', 'function (', 'var ', 'const ', 'let ',
+    'document.', 'window.', 'localStorage', 'sessionStorage',
+    'addEventListener', 'return ', 'typeof ', '="', '=>',
+    'googTagCode', 'layout_version', 'box_embed', 'item_slide_show',
+    'serviceWorker', 'data-cache', 'loadCSS', 'jsonMode',
+    'decodeNestedURI', 'checkQueryXSS', 'appendTracking',
+    'phimdecu', 'thumb_list', 'thumbnail_url', 'share_url'
+  ];
+
+  for (const kw of codeKeywords) {
+    if (text.includes(kw)) return false;
+  }
+
+  // 2. Chặn các đoạn có quá nhiều dấu chấm phẩy hoặc dấu gạch chéo ngược (thường là script/JSON)
+  const semicolonCount = (text.match(/;/g) || []).length;
+  if (semicolonCount > 2) return false;
+
+  const backslashCount = (text.match(/\\/g) || []).length;
+  if (backslashCount > 2) return false;
+
+  // 3. Chặn các câu chỉ dẫn giao diện hoặc bản quyền của báo gốc
+  const junkPhrases = [
+    'Bản quyền thuộc',
+    'Ý kiến bạn đọc',
+    'Theo dõi trên Google News',
+    'Bình luận',
+    'Chia sẻ bài viết',
+    'dấu tích xanh bên cạnh',
+    'khi ô vuông chuyển thành',
+    'bạn đọc có thể đóng trang web',
+    'Trở lại Thời sự',
+    'Trở lại Kinh doanh',
+    'Xem thêm:',
+    'Tin liên quan'
+  ];
+
+  for (const phrase of junkPhrases) {
+    if (text.includes(phrase)) return false;
+  }
+
+  // 4. Phải có tối thiểu 6 từ
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length < 6) return false;
+
+  return true;
+}
+
+/**
  * Tải và bóc tách nội dung chi tiết từ một URL bài viết
  */
 export async function extractArticleDetails(
@@ -230,7 +285,7 @@ export async function extractArticleDetails(
       return null;
     }
 
-    const html = await res.text();
+    const rawHtml = await res.text();
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.replace('www.', '');
 
@@ -241,52 +296,81 @@ export async function extractArticleDetails(
     else if (hostname.includes('thanhnien')) sourceName = 'Thanh Niên';
     else if (hostname.includes('vietnamnet')) sourceName = 'VietnamNet';
 
+    // BƯỚC 1: XÓA SẠCH HOÀN TOÀN MÃ SCRIPT, STYLE, NOSCRIPT, SVG, IFRAME VÀ COMMENTS
+    const cleanHtml = rawHtml
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
+      .replace(/<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi, ' ')
+      .replace(/<template\b[^<]*(?:(?!<\/template>)<[^<]*)*<\/template>/gi, ' ')
+      .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, ' ')
+      .replace(/<!--[\s\S]*?-->/g, ' ');
+
     // 1. Tìm tiêu đề (h1)
-    const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    const h1Match = cleanHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
     const originalTitle = h1Match ? decodeHtmlEntities(stripHtmlTags(h1Match[1])) : '';
 
     // 2. Tìm Sapo / Mô tả mở đầu
     const sapoMatch = 
-      html.match(/<(?:p|div|h2)[^>]*class=["'][^"']*(?:sapo|description|lead)[^"']*["'][^>]*>([\s\S]*?)<\/(?:p|div|h2)>/i) ||
-      html.match(/<meta[^>]+name=["'](?:description|twitter:description)["'][^>]+content=["']([^"']*)["']/i);
+      cleanHtml.match(/<(?:p|div|h2)[^>]*class=["'][^"']*(?:sapo|description|lead)[^"']*["'][^>]*>([\s\S]*?)<\/(?:p|div|h2)>/i) ||
+      cleanHtml.match(/<meta[^>]+name=["'](?:description|twitter:description)["'][^>]+content=["']([^"']*)["']/i);
     
     let sapo = '';
     if (sapoMatch) {
-      sapo = decodeHtmlEntities(stripHtmlTags(sapoMatch[1]));
+      const candidateSapo = decodeHtmlEntities(stripHtmlTags(sapoMatch[1]));
+      if (isCleanVietnameseParagraph(candidateSapo)) {
+        sapo = candidateSapo;
+      }
     }
 
-    // 3. Tìm các đoạn văn thân bài (paragraphs)
-    const pMatches = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
-    const bodyParagraphs: string[] = [];
+    // 3. Tìm vùng chứa nội dung chính của bài báo
+    let mainArticleHtml = cleanHtml;
+    const articleContainerMatch = 
+      cleanHtml.match(/<article[\s\S]*?>([\s\S]*?)<\/article>/i) ||
+      cleanHtml.match(/<div[^>]*class=["'][^"']*(?:fck_detail|singular-content|detail-content|maincontent|detail__content|article-content)[^"']*["'][\s\S]*?>([\s\S]*?)<\/div>/i);
+
+    if (articleContainerMatch) {
+      mainArticleHtml = articleContainerMatch[1];
+    }
+
+    // 4. Tìm các đoạn văn thân bài từ vùng nội dung chính
+    const pMatches = [...mainArticleHtml.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+    let bodyParagraphs: string[] = [];
 
     for (const p of pMatches) {
       const text = decodeHtmlEntities(stripHtmlTags(p[1]));
-      // Bỏ qua các đoạn quá ngắn, bản quyền, quảng cáo hoặc điều hướng
-      if (
-        text.length > 50 &&
-        !text.includes('Bản quyền thuộc') &&
-        !text.includes('Ý kiến bạn đọc') &&
-        !text.includes('Theo dõi trên Google News') &&
-        !text.includes('Bình luận') &&
-        !text.includes('Chia sẻ bài viết')
-      ) {
+      if (isCleanVietnameseParagraph(text)) {
         bodyParagraphs.push(text);
       }
     }
 
-    // 4. Tìm ảnh đại diện chính (og:image hoặc img đầu tiên của bài)
+    // Nếu vùng mainArticleHtml không đủ đoạn văn, thử quét toàn bộ cleanHtml nhưng với bộ lọc nghiêm ngặt
+    if (bodyParagraphs.length < 2) {
+      const allPMatches = [...cleanHtml.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+      bodyParagraphs = [];
+      for (const p of allPMatches) {
+        const text = decodeHtmlEntities(stripHtmlTags(p[1]));
+        if (isCleanVietnameseParagraph(text)) {
+          bodyParagraphs.push(text);
+        }
+      }
+    }
+
+    // 5. Tìm ảnh đại diện chính (og:image hoặc img đầu tiên của bài)
     let imageUrl: string | undefined;
     let imageCaption: string | undefined;
 
-    const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+    const ogImageMatch = rawHtml.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
     if (ogImageMatch && ogImageMatch[1].startsWith('http')) {
       imageUrl = ogImageMatch[1];
     }
 
     // Tìm caption ảnh nếu có
-    const figcaptionMatch = html.match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i);
+    const figcaptionMatch = cleanHtml.match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i);
     if (figcaptionMatch) {
-      imageCaption = decodeHtmlEntities(stripHtmlTags(figcaptionMatch[1]));
+      const cap = decodeHtmlEntities(stripHtmlTags(figcaptionMatch[1]));
+      if (isCleanVietnameseParagraph(cap) || (cap.length > 10 && cap.length < 300)) {
+        imageCaption = cap;
+      }
     }
 
     const rawText = [sapo, ...bodyParagraphs].join('\n\n');

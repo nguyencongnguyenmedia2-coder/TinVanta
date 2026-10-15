@@ -1,4 +1,4 @@
-import { ExtractedArticle } from '../crawler/news-crawler';
+import { ExtractedArticle, isCleanVietnameseParagraph } from '../crawler/news-crawler';
 
 export interface RewrittenArticleResult {
   title: string;
@@ -52,14 +52,26 @@ export function synthesizeJournalisticArticle(
   // 2. Viết lại Sapo chuyên sâu
   const sapo = `Theo ghi nhận và tổng hợp chuyên sâu từ TinVanta (dựa trên diễn biến mới nhất từ ${sourceName}), vụ việc "${originalTitle}" đang nhận được sự quan tâm đặc biệt của dư luận và giới chuyên môn. Những dữ liệu và động thái vừa được công bố không chỉ phản ánh trực diện bản chất sự kiện mà còn đặt ra nhiều vấn đề quan trọng cần nhìn nhận thấu đáo trong bức tranh tổng thể của ngành ${categoryName.toLowerCase()}.`;
 
-  // 3. Xây dựng nội dung thân bài chuẩn báo chí cao cấp
-  const paragraphs = article.bodyParagraphs.length >= 2 
-    ? article.bodyParagraphs 
-    : [article.sapo, 'Vấn đề đang tiếp tục được các cơ quan chức năng và các bên liên quan theo dõi sát sao nhằm có phương án ứng phó toàn diện.'];
+  // 3. Lọc sạch toàn bộ đoạn văn, loại bỏ hoàn toàn các đoạn dính mã code
+  const cleanParagraphs = article.bodyParagraphs.filter(p => isCleanVietnameseParagraph(p));
+  const validParagraphs = cleanParagraphs.length >= 2 
+    ? cleanParagraphs 
+    : [
+        article.sapo && isCleanVietnameseParagraph(article.sapo) 
+          ? article.sapo 
+          : 'Sự việc đang nhận được sự theo dõi sát sao từ cơ quan quản lý và các đơn vị chuyên môn liên quan.',
+        'Các đơn vị chức năng đã khẩn trương vào cuộc nhằm rà soát hiện trường, xác định trách nhiệm và triển khai các biện pháp ứng phó đồng bộ.',
+        'Trước những diễn biến mới, dư luận kỳ vọng các bên sẽ nhanh chóng đưa ra giải pháp căn cơ, vừa bảo đảm quyền lợi chung vừa giữ vững tính nghiêm minh của pháp luật.'
+      ];
 
-  const part1 = paragraphs.slice(0, Math.ceil(paragraphs.length / 3)).join('\n\n');
-  const part2 = paragraphs.slice(Math.ceil(paragraphs.length / 3), Math.ceil((paragraphs.length * 2) / 3)).join('\n\n');
-  const part3 = paragraphs.slice(Math.ceil((paragraphs.length * 2) / 3)).join('\n\n') || paragraphs[paragraphs.length - 1];
+  const part1 = validParagraphs.slice(0, Math.ceil(validParagraphs.length / 3));
+  const part2 = validParagraphs.slice(Math.ceil(validParagraphs.length / 3), Math.ceil((validParagraphs.length * 2) / 3));
+  const part3 = validParagraphs.slice(Math.ceil((validParagraphs.length * 2) / 3));
+
+  const formatParagraphs = (arr: string[], fallback: string) => {
+    if (arr.length === 0) return `<p>${fallback}</p>`;
+    return arr.map(p => `<p>${p}</p>`).join('\n');
+  };
 
   const contentHtml = `
 <div class="article-lead-highlight mb-6 p-5 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-600 rounded-r-xl">
@@ -69,7 +81,7 @@ export function synthesizeJournalisticArticle(
 </div>
 
 <h2>1. Bối cảnh và diễn biến cốt lõi của sự việc</h2>
-<p>${part1 || paragraphs[0]}</p>
+${formatParagraphs(part1, 'Vấn đề đang tiếp tục được các cơ quan chức năng và các bên liên quan theo dõi sát sao nhằm có phương án ứng phó toàn diện.')}
 
 <div class="my-6 p-5 bg-blue-50/60 border border-blue-200 rounded-xl">
   <h4 class="text-blue-900 font-bold mb-2 flex items-center gap-2">
@@ -83,7 +95,7 @@ export function synthesizeJournalisticArticle(
 </div>
 
 <h2>2. Phân tích tác động và các góc nhìn đa chiều</h2>
-<p>${part2 || 'Xét trên bình diện rộng, các chuyên gia phân tích chỉ ra rằng đây không đơn thuần là một biến cố cục bộ mà là kết quả của một chuỗi mắt xích liên đới. Việc mổ xẻ nguyên nhân gốc rễ sẽ giúp định hình các giải pháp căn cơ, phòng ngừa các rủi ro tương tự trong tương lai.'}</p>
+${formatParagraphs(part2, 'Xét trên bình diện rộng, các chuyên gia phân tích chỉ ra rằng đây không đơn thuần là một biến cố cục bộ mà là kết quả của một chuỗi mắt xích liên đới. Việc mổ xẻ nguyên nhân gốc rễ sẽ giúp định hình các giải pháp căn cơ, phòng ngừa các rủi ro tương tự trong tương lai.')}
 
 <blockquote class="my-6 pl-5 border-l-4 border-gray-400 italic text-gray-700 bg-gray-50 py-3 rounded-r-lg">
   "Một sự kiện thời sự chuẩn mực không chỉ dừng lại ở việc phản ánh điều gì đã xảy ra, mà quan trọng hơn là trả lời câu hỏi: Sự kiện này sẽ tác động như thế nào đến tương lai và mỗi người chúng ta cần hành động ra sao?"
@@ -91,7 +103,7 @@ export function synthesizeJournalisticArticle(
 </blockquote>
 
 <h2>3. Đánh giá xu hướng và kiến nghị định hướng</h2>
-<p>${part3 || 'Trước tình hình hiện nay, dư luận và các bên liên quan kỳ vọng vào những động thái quyết đoán, minh bạch và kịp thời hơn nữa để đảm bảo quyền lợi chung và giữ vững sự ổn định lâu dài.'}</p>
+${formatParagraphs(part3, 'Trước tình hình hiện nay, dư luận và các bên liên quan kỳ vọng vào những động thái quyết đoán, minh bạch và kịp thời hơn nữa để đảm bảo quyền lợi chung và giữ vững sự ổn định lâu dài.')}
 
 <div class="my-6 p-5 bg-emerald-50 border border-emerald-200 rounded-xl">
   <h4 class="text-emerald-900 font-bold mb-2">💡 Khuyến nghị & Bài học kinh nghiệm</h4>
@@ -145,37 +157,43 @@ export async function rewriteWithPollinationsFree(
   categoryName: string
 ): Promise<RewrittenArticleResult | null> {
   try {
+    const cleanParagraphs = article.bodyParagraphs
+      .filter(p => isCleanVietnameseParagraph(p))
+      .slice(0, 4);
+
+    const contextText = cleanParagraphs.length > 0 
+      ? cleanParagraphs.join('\n\n')
+      : (article.sapo || 'Thông tin thời sự đang được cập nhật.');
+
     const prompt = `
-Bạn là Tổng biên tập kiêm Trưởng ban phóng viên điều tra của Báo điện tử TinVanta.
-Nhiệm vụ của bạn: Hãy tiếp nhận bài báo gốc thu thập từ "${article.sourceName}" sau đây và VIẾT LẠI HOÀN TOÀN thành một bài báo mới 100% độc quyền, chuyên sâu, chuẩn SEO cho báo TinVanta.
+Bạn là Tổng biên tập kiêm Trưởng ban phóng viên của Báo điện tử TinVanta.
+Nhiệm vụ: Tiếp nhận bài báo gốc từ "${article.sourceName}" sau đây và VIẾT LẠI HOÀN TOÀN thành bài báo mới độc quyền, chuẩn SEO cho TinVanta:
 
-Thông tin bài báo gốc:
-- Tiêu đề gốc: "${article.originalTitle}"
-- Chuyên mục: "${categoryName}"
-- Tóm tắt gốc: "${article.sapo}"
-- Nội dung tư liệu gốc:
-${article.bodyParagraphs.slice(0, 8).join('\n')}
+Tiêu đề gốc: "${article.originalTitle}"
+Chuyên mục: "${categoryName}"
+Tóm tắt gốc: "${article.sapo}"
+Tư liệu sự kiện:
+${contextText}
 
-YÊU CẦU BẮT BUỘC:
-1. Tiêu đề mới (title): Sáng tạo tiêu đề mới hấp dẫn, giật tít báo chí đẳng cấp, KHÔNG trùng lặp tiêu đề gốc.
-2. Sapo mới (sapo): Đoạn mở đầu sắc sảo, 120-160 từ tiếng Việt.
-3. Nội dung (content_html): Định dạng HTML đẹp mắt, chia các phần rõ ràng với thẻ <h2>, <h3>, <blockquote>, danh sách <ul><li>, hộp phân tích highlight. Phân tích nguyên nhân, diễn biến, tác động và bài học. Văn phong báo chí đĩnh đạc, hiện đại.
-4. Điểm cốt lõi (summary_points): 4 gạch đầu dòng then chốt.
-5. Thẻ từ khóa (tags): Mảng 4-6 từ khóa liên quan.
+YÊU CẦU:
+1. title: Tiêu đề mới độc quyền, hấp dẫn, chuẩn SEO.
+2. sapo: Mở đầu 100-140 từ sắc nét.
+3. content_html: Nội dung thân bài gồm các thẻ <h2>, <p>, <blockquote>, <ul><li>.
+4. summary_points: 4 gạch đầu dòng then chốt.
+5. tags: 4 thẻ từ khóa.
 
-HÃY TRẢ VỀ DUY NHẤT MỘT ĐỐI TƯỢNG JSON HỢP LỆ THEO CẤU TRÚC:
+TRẢ VỀ DUY NHẤT JSON:
 {
-  "title": "Tiêu đề mới độc quyền...",
-  "sapo": "Đoạn mở đầu sắc nét...",
-  "content_html": "<h2>1. ...</h2><p>...</p>",
+  "title": "...",
+  "sapo": "...",
+  "content_html": "<h2>1. Bối cảnh diễn biến</h2><p>...</p><h2>2. Tác động và giải pháp</h2><p>...</p>",
   "summary_points": ["điểm 1", "điểm 2", "điểm 3", "điểm 4"],
-  "tags": ["tag1", "tag2", "tag3"]
+  "tags": ["thời sự", "tin tức", "${categoryName}"]
 }
-Không kèm lời giải thích nào khác ngoài JSON.
     `.trim();
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
+    const timeout = setTimeout(() => controller.abort(), 40000); // 40s timeout
 
     const res = await fetch('https://text.pollinations.ai/', {
       method: 'POST',

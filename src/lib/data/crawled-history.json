@@ -1,5 +1,65 @@
 [
   {
+    "sourceUrl": "https://vnexpress.net/gia-xang-dau-moi-nhat-hom-nay-15-10-5132689.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Giá xăng E10 giảm về sát 27.000 đồng một lít",
+    "articleId": "art-crawler-1792060023025",
+    "articleSlug": "ho-so-su-kien-gia-xang-e10-giam-ve-sat-27000-dong-mot-lit-8252",
+    "articleTitle": "Hồ sơ sự kiện: Giá xăng E10 giảm về sát 27.000 đồng một lít",
+    "categorySlug": "kinh-te",
+    "wordCount": 953,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:27:03.025Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792060022269.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:27:02.272Z"
+  },
+  {
+    "sourceUrl": "https://vnexpress.net/300-tan-quan-ao-cu-bi-do-bo-ven-duong-o-ha-noi-5132772.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "300 tấn quần áo cũ bị đổ bỏ ven đường ở Hà Nội",
+    "articleId": "art-crawler-1792059631656",
+    "articleSlug": "goc-nhin-da-chieu-300-tan-quan-ao-cu-bi-do-bo-ven-duong-o-ha-noi-4171",
+    "articleTitle": "Góc nhìn đa chiều: 300 tấn quần áo cũ bị đổ bỏ ven đường ở Hà Nội",
+    "categorySlug": "thoi-su",
+    "wordCount": 1119,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:20:31.654Z"
+  },
+  {
+    "sourceUrl": "https://vnexpress.net/nhat-ban-chi-gan-800-ty-dong-mua-hoa-cuc-viet-5132695.html",
+    "sourceDomain": "vnexpress.net",
+    "originalTitle": "Nhật Bản chi gần 800 tỷ đồng mua hoa cúc Việt",
+    "articleId": "art-crawler-1792059573377",
+    "articleSlug": "toan-canh-nhat-ban-chi-gan-800-ty-dong-mua-hoa-cuc-viet-4720",
+    "articleTitle": "Toàn cảnh: Nhật Bản chi gần 800 tỷ đồng mua hoa cúc Việt",
+    "categorySlug": "kinh-te",
+    "wordCount": 932,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:19:33.377Z"
+  },
+  {
+    "sourceUrl": "https://tuoitre.vn/bai-test-1792059572546.htm",
+    "sourceDomain": "tuoitre.vn",
+    "originalTitle": "Tiêu đề thử nghiệm",
+    "articleId": "test-art-1",
+    "articleSlug": "tieu-de-thu-nghiem-test",
+    "articleTitle": "Tiêu đề mới thử nghiệm",
+    "categorySlug": "thoi-su",
+    "wordCount": 500,
+    "aiProvider": "smart_synthesizer",
+    "crawledAt": "2026-10-15T10:19:32.548Z"
+  },
+  {
     "sourceUrl": "https://vnexpress.net/chung-khoan-mat-moc-1-700-diem-5132751.html",
     "sourceDomain": "vnexpress.net",
     "originalTitle": "Chứng khoán mất mốc 1.700 điểm",
