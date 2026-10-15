@@ -1,7 +1,5 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, Sun, CloudRain, DollarSign, Coins } from 'lucide-react';
+import React from 'react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface MarketItem {
   label: string;
@@ -23,12 +21,6 @@ const MARKET_ITEMS: MarketItem[] = [
 ];
 
 export function MarketDataBar() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <div className="bg-gray-50/90 border-y border-gray-200 text-xs py-1.5 px-4 overflow-hidden select-none">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">

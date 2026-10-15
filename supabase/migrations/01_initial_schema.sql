@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_profiles_slug ON public.profiles(slug);
+DROP TRIGGER IF EXISTS trg_profiles_updated_at ON public.profiles;
 CREATE TRIGGER trg_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- --------------------------------------------------------------------
@@ -98,6 +99,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
 );
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON public.categories(slug);
 CREATE INDEX IF NOT EXISTS idx_categories_parent ON public.categories(parent_id);
+DROP TRIGGER IF EXISTS trg_categories_updated_at ON public.categories;
 CREATE TRIGGER trg_categories_updated_at BEFORE UPDATE ON public.categories FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- --------------------------------------------------------------------
@@ -169,6 +171,7 @@ CREATE INDEX IF NOT EXISTS idx_articles_category ON public.articles(primary_cate
 CREATE INDEX IF NOT EXISTS idx_articles_created_by ON public.articles(created_by);
 CREATE INDEX IF NOT EXISTS idx_articles_featured ON public.articles(is_featured) WHERE is_featured = true;
 CREATE INDEX IF NOT EXISTS idx_articles_breaking ON public.articles(is_breaking) WHERE is_breaking = true;
+DROP TRIGGER IF EXISTS trg_articles_updated_at ON public.articles;
 CREATE TRIGGER trg_articles_updated_at BEFORE UPDATE ON public.articles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- Full Text Search column & index (tiếng Việt không dấu và có dấu)

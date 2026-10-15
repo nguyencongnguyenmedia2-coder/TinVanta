@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_profiles_slug ON public.profiles(slug);
+DROP TRIGGER IF EXISTS trg_profiles_updated_at ON public.profiles;
 CREATE TRIGGER trg_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- --------------------------------------------------------------------
@@ -98,6 +99,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
 );
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON public.categories(slug);
 CREATE INDEX IF NOT EXISTS idx_categories_parent ON public.categories(parent_id);
+DROP TRIGGER IF EXISTS trg_categories_updated_at ON public.categories;
 CREATE TRIGGER trg_categories_updated_at BEFORE UPDATE ON public.categories FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- --------------------------------------------------------------------
@@ -169,6 +171,7 @@ CREATE INDEX IF NOT EXISTS idx_articles_category ON public.articles(primary_cate
 CREATE INDEX IF NOT EXISTS idx_articles_created_by ON public.articles(created_by);
 CREATE INDEX IF NOT EXISTS idx_articles_featured ON public.articles(is_featured) WHERE is_featured = true;
 CREATE INDEX IF NOT EXISTS idx_articles_breaking ON public.articles(is_breaking) WHERE is_breaking = true;
+DROP TRIGGER IF EXISTS trg_articles_updated_at ON public.articles;
 CREATE TRIGGER trg_articles_updated_at BEFORE UPDATE ON public.articles FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- Full Text Search column & index (tiếng Việt không dấu và có dấu)
@@ -566,25 +569,31 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 3. CHÍNH SÁCH BẢNG PROFILES
 -- --------------------------------------------------------------------
 -- Ai cũng có thể đọc profile công khai của tác giả
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
 CREATE POLICY "Public profiles are viewable by everyone" 
 ON public.profiles FOR SELECT USING (true);
 
 -- Người dùng chỉ được sửa profile của chính mình
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" 
 ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
 -- --------------------------------------------------------------------
 -- 4. CHÍNH SÁCH BẢNG CATEGORIES & TAGS
 -- --------------------------------------------------------------------
+DROP POLICY IF EXISTS "Categories are readable by everyone" ON public.categories;
 CREATE POLICY "Categories are readable by everyone" 
 ON public.categories FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Categories manageable by authorized staff" ON public.categories;
 CREATE POLICY "Categories manageable by authorized staff" 
 ON public.categories FOR ALL USING (public.check_user_permission('categories.manage'));
 
+DROP POLICY IF EXISTS "Tags are readable by everyone" ON public.tags;
 CREATE POLICY "Tags are readable by everyone" 
 ON public.tags FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Tags manageable by authorized staff" ON public.tags;
 CREATE POLICY "Tags manageable by authorized staff" 
 ON public.tags FOR ALL USING (public.check_user_permission('tags.manage'));
 
@@ -592,26 +601,31 @@ ON public.tags FOR ALL USING (public.check_user_permission('tags.manage'));
 -- 5. CHÍNH SÁCH BẢNG ARTICLES
 -- --------------------------------------------------------------------
 -- Độc giả công khai chỉ đọc được bài đã xuất bản (status = 'published' AND published_at <= NOW())
+DROP POLICY IF EXISTS "Public can view published articles" ON public.articles;
 CREATE POLICY "Public can view published articles" 
 ON public.articles FOR SELECT 
 USING (status = 'published' AND published_at <= NOW() AND deleted_at IS NULL);
 
 -- Nhân viên tòa soạn có quyền articles.read_all đọc được mọi bài
+DROP POLICY IF EXISTS "Editorial staff can view all articles" ON public.articles;
 CREATE POLICY "Editorial staff can view all articles" 
 ON public.articles FOR SELECT 
 USING (public.check_user_permission('articles.read_all'));
 
 -- Phóng viên đọc được bài do chính mình tạo ra
+DROP POLICY IF EXISTS "Authors can view own articles" ON public.articles;
 CREATE POLICY "Authors can view own articles" 
 ON public.articles FOR SELECT 
 USING (auth.uid() = created_by);
 
 -- Tạo bài viết mới
+DROP POLICY IF EXISTS "Staff can create articles" ON public.articles;
 CREATE POLICY "Staff can create articles" 
 ON public.articles FOR INSERT 
 WITH CHECK (public.check_user_permission('articles.create') AND auth.uid() = created_by);
 
 -- Phóng viên sửa bài của mình khi ở trạng thái draft hoặc changes_requested
+DROP POLICY IF EXISTS "Authors can update own draft articles" ON public.articles;
 CREATE POLICY "Authors can update own draft articles" 
 ON public.articles FOR UPDATE 
 USING (
@@ -621,6 +635,7 @@ USING (
 );
 
 -- Biên tập viên & Tổng biên tập sửa bài
+DROP POLICY IF EXISTS "Editors can update articles" ON public.articles;
 CREATE POLICY "Editors can update articles" 
 ON public.articles FOR UPDATE 
 USING (public.check_user_permission('articles.review') OR public.check_user_permission('articles.publish'));
@@ -628,13 +643,16 @@ USING (public.check_user_permission('articles.review') OR public.check_user_perm
 -- --------------------------------------------------------------------
 -- 6. CHÍNH SÁCH BẢNG MEDIA_ASSETS
 -- --------------------------------------------------------------------
+DROP POLICY IF EXISTS "Media is readable by everyone" ON public.media_assets;
 CREATE POLICY "Media is readable by everyone" 
 ON public.media_assets FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Authorized staff can upload media" ON public.media_assets;
 CREATE POLICY "Authorized staff can upload media" 
 ON public.media_assets FOR INSERT 
 WITH CHECK (public.check_user_permission('media.upload'));
 
+DROP POLICY IF EXISTS "Authorized staff can delete media" ON public.media_assets;
 CREATE POLICY "Authorized staff can delete media" 
 ON public.media_assets FOR DELETE 
 USING (public.check_user_permission('media.delete'));
@@ -642,12 +660,15 @@ USING (public.check_user_permission('media.delete'));
 -- --------------------------------------------------------------------
 -- 7. CHÍNH SÁCH BẢNG BOOKMARKS
 -- --------------------------------------------------------------------
+DROP POLICY IF EXISTS "Users can view own bookmarks" ON public.bookmarks;
 CREATE POLICY "Users can view own bookmarks" 
 ON public.bookmarks FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own bookmarks" ON public.bookmarks;
 CREATE POLICY "Users can create own bookmarks" 
 ON public.bookmarks FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own bookmarks" ON public.bookmarks;
 CREATE POLICY "Users can delete own bookmarks" 
 ON public.bookmarks FOR DELETE USING (auth.uid() = user_id);
 
@@ -655,42 +676,52 @@ ON public.bookmarks FOR DELETE USING (auth.uid() = user_id);
 -- 8. CHÍNH SÁCH BẢNG COMMENTS
 -- --------------------------------------------------------------------
 -- Mọi người đọc được bình luận đã duyệt
+DROP POLICY IF EXISTS "Public can read approved comments" ON public.comments;
 CREATE POLICY "Public can read approved comments" 
 ON public.comments FOR SELECT USING (status = 'approved');
 
 -- Người dùng xem bình luận của chính mình
+DROP POLICY IF EXISTS "Users can see own comments" ON public.comments;
 CREATE POLICY "Users can see own comments" 
 ON public.comments FOR SELECT USING (auth.uid() = user_id);
 
 -- Độc giả đăng nhập được gửi bình luận mới (mặc định pending kiểm duyệt)
+DROP POLICY IF EXISTS "Authenticated users can submit comments" ON public.comments;
 CREATE POLICY "Authenticated users can submit comments" 
 ON public.comments FOR INSERT WITH CHECK (auth.uid() = user_id AND status = 'pending');
 
 -- Moderator kiểm duyệt bình luận
+DROP POLICY IF EXISTS "Moderators can update comments" ON public.comments;
 CREATE POLICY "Moderators can update comments" 
 ON public.comments FOR UPDATE USING (public.check_user_permission('comments.moderate'));
 
 -- --------------------------------------------------------------------
 -- 9. CHÍNH SÁCH BẢNG ADVERTISING & PLACEMENTS
 -- --------------------------------------------------------------------
+DROP POLICY IF EXISTS "Placements readable by everyone" ON public.ad_placements;
 CREATE POLICY "Placements readable by everyone" 
 ON public.ad_placements FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Active creatives readable by everyone" ON public.ad_creatives;
 CREATE POLICY "Active creatives readable by everyone" 
 ON public.ad_creatives FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Ads manageable by ads managers" ON public.ad_campaigns;
 CREATE POLICY "Ads manageable by ads managers" 
 ON public.ad_campaigns FOR ALL USING (public.check_user_permission('ads.manage'));
 
+DROP POLICY IF EXISTS "Creatives manageable by ads managers" ON public.ad_creatives;
 CREATE POLICY "Creatives manageable by ads managers" 
 ON public.ad_creatives FOR ALL USING (public.check_user_permission('ads.manage'));
 
 -- --------------------------------------------------------------------
 -- 10. CHÍNH SÁCH BẢNG SITE_SETTINGS
 -- --------------------------------------------------------------------
+DROP POLICY IF EXISTS "Site settings readable by public" ON public.site_settings;
 CREATE POLICY "Site settings readable by public" 
 ON public.site_settings FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Site settings manageable by admins" ON public.site_settings;
 CREATE POLICY "Site settings manageable by admins" 
 ON public.site_settings FOR ALL USING (public.check_user_permission('settings.manage'));
 
@@ -698,6 +729,7 @@ ON public.site_settings FOR ALL USING (public.check_user_permission('settings.ma
 -- 11. CHÍNH SÁCH BẢNG AUDIT_LOGS
 -- --------------------------------------------------------------------
 -- Chỉ Admin / Super Admin được xem audit log
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs;
 CREATE POLICY "Admins can view audit logs" 
 ON public.audit_logs FOR SELECT USING (public.check_user_permission('audit_logs.read'));
 

@@ -108,7 +108,7 @@ export function OpinionColumn() {
 
               {/* Quote text */}
               <blockquote className="text-xs text-gray-600 italic border-l-2 border-amber-400 pl-2.5 my-2 line-clamp-3 leading-relaxed">
-                "{item.quote}"
+                &ldquo;{item.quote}&rdquo;
               </blockquote>
             </div>
 
