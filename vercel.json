@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/crawl-and-publish",
+      "schedule": "0 1,7,13,19 * * *"
+    },
+    {
       "path": "/api/cron/auto-generate",
       "schedule": "0 6,12,18 * * *"
     }
