@@ -155,6 +155,79 @@ export function updateArticleInStore(
   }
 }
 
+function getDeletedPath(): string {
+  if (process.env.VERCEL) {
+    const tmpPath = path.join('/tmp', 'deleted-articles.json');
+    return tmpPath;
+  }
+  return path.join(process.cwd(), 'src', 'lib', 'data', 'deleted-articles.json');
+}
+
+/**
+ * Đọc danh sách các ID hoặc slug bài viết đã bị xóa
+ */
+export function getDeletedArticleKeys(): Set<string> {
+  try {
+    const p = getDeletedPath();
+    if (fs.existsSync(p)) {
+      const raw = fs.readFileSync(p, 'utf-8');
+      if (raw.trim()) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          return new Set(arr.map((k: string) => String(k).trim().toLowerCase()));
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Lỗi đọc deleted-articles.json:', err);
+  }
+  return new Set();
+}
+
+/**
+ * Đánh dấu bài viết đã bị xóa vĩnh viễn (xóa khỏi store và ghi nhận vào blacklist)
+ */
+export function markArticleDeleted(articleIdOrSlug: string): boolean {
+  try {
+    const targetKey = String(articleIdOrSlug || '').trim().toLowerCase();
+    if (!targetKey) return false;
+
+    // Tìm bài viết tương ứng để lấy cả ID lẫn slug nếu có
+    const diskList = getStoredArticles();
+    const diskTarget = diskList.find(a => 
+      String(a.id || '').trim().toLowerCase() === targetKey || 
+      String(a.slug || '').trim().toLowerCase() === targetKey
+    );
+    const mockTarget = MOCK_ARTICLES.find(a => 
+      String(a.id || '').trim().toLowerCase() === targetKey || 
+      String(a.slug || '').trim().toLowerCase() === targetKey
+    );
+    const found = diskTarget || mockTarget;
+
+    // 1. Xóa khỏi store đĩa
+    deleteArticleFromStore(articleIdOrSlug);
+    if (found?.id) deleteArticleFromStore(found.id);
+    if (found?.slug) deleteArticleFromStore(found.slug);
+
+    // 2. Ghi nhận vào danh sách blacklist đã xóa để không bao giờ tải lại kể cả từ Mock data
+    const p = getDeletedPath();
+    const set = getDeletedArticleKeys();
+    set.add(targetKey);
+    if (found?.id) set.add(String(found.id).trim().toLowerCase());
+    if (found?.slug) set.add(String(found.slug).trim().toLowerCase());
+
+    const dir = path.dirname(p);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(p, JSON.stringify(Array.from(set), null, 2), 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Lỗi khi đánh dấu xóa bài viết:', err);
+    return false;
+  }
+}
+
 /**
  * Xóa một bài viết khỏi bộ nhớ đĩa
  */
@@ -162,13 +235,15 @@ export function deleteArticleFromStore(articleIdOrSlug: string): boolean {
   try {
     const filePath = getStoragePath();
     const list = getStoredArticles();
-    const targetKey = (articleIdOrSlug || '').trim().toLowerCase();
-    const filtered = list.filter(a => 
-      a.id !== articleIdOrSlug && 
-      a.slug !== articleIdOrSlug &&
-      a.id.toLowerCase() !== targetKey &&
-      a.slug.toLowerCase() !== targetKey
-    );
+    const targetKey = String(articleIdOrSlug || '').trim().toLowerCase();
+    if (!targetKey) return false;
+
+    const filtered = list.filter(a => {
+      if (!a) return false;
+      const aId = String(a.id || '').trim().toLowerCase();
+      const aSlug = String(a.slug || '').trim().toLowerCase();
+      return aId !== targetKey && aSlug !== targetKey;
+    });
     
     if (filtered.length === list.length) {
       return false;
@@ -189,10 +264,21 @@ export function deleteArticleFromStore(articleIdOrSlug: string): boolean {
 
 /**
  * Lấy danh sách toàn bộ bài viết hợp nhất (Store đĩa + Mock articles ban đầu),
- * tự động loại bỏ trùng lặp và sắp xếp theo ngày giờ mới nhất
+ * tự động loại bỏ trùng lặp và loại trừ các bài viết đã bị xóa
  */
 export function getAllCombinedArticles(): Article[] {
   const diskArticles = getStoredArticles();
+  const deletedKeys = getDeletedArticleKeys();
+
+  const isDeleted = (art: Article): boolean => {
+    if (!art) return true;
+    if (art.status === 'archived' || Boolean(art.deleted_at)) return true;
+    const idKey = String(art.id || '').trim().toLowerCase();
+    const slugKey = String(art.slug || '').trim().toLowerCase();
+    if (idKey && deletedKeys.has(idKey)) return true;
+    if (slugKey && deletedKeys.has(slugKey)) return true;
+    return false;
+  };
 
   const combined: Article[] = [];
   const seenIds = new Set<string>();
@@ -212,18 +298,18 @@ export function getAllCombinedArticles(): Article[] {
     return art;
   };
 
-  // 1. Ưu tiên bài trong store đĩa (các bài do AI cào hoặc do người dùng tạo/sửa/duyệt)
+  // 1. Ưu tiên bài trong store đĩa (chưa bị xóa)
   for (const art of diskArticles) {
-    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
+    if (art && art.slug && !isDeleted(art) && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
       seenIds.add(art.id);
       seenSlugs.add(art.slug);
       combined.push(normalizeArticle(art));
     }
   }
 
-  // 2. Bổ sung các bài từ MOCK_ARTICLES nếu chưa có trong store
+  // 2. Bổ sung các bài từ MOCK_ARTICLES (chưa bị xóa) nếu chưa có trong store
   for (const art of MOCK_ARTICLES) {
-    if (art && art.slug && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
+    if (art && art.slug && !isDeleted(art) && !seenSlugs.has(art.slug) && !seenIds.has(art.id)) {
       seenIds.add(art.id);
       seenSlugs.add(art.slug);
       combined.push(normalizeArticle(art));

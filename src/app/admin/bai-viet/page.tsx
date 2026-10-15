@@ -33,7 +33,9 @@ function AdminArticlesContent() {
   const searchParams = useSearchParams();
 
   // Đọc query parameters ban đầu nếu được dẫn từ trang khác
-  const initialCategory = searchParams.get('category') || 'all';
+  const rawCategory = searchParams.get('category') || 'all';
+  const matchedCat = MOCK_CATEGORIES.find(c => c.id === rawCategory || c.slug === rawCategory);
+  const initialCategory = matchedCat ? matchedCat.slug : rawCategory;
   const initialStatus = searchParams.get('status') || 'all';
   const initialTag = searchParams.get('tag') || '';
 
@@ -110,8 +112,11 @@ function AdminArticlesContent() {
   const handleDeleteArticle = async (article: Article) => {
     if (!confirm(`Bạn có chắc muốn xóa bài viết: "${article.title}"?`)) return;
 
+    // Cập nhật lạc quan (Optimistic update) để bài viết biến mất khỏi bảng ngay lập tức
+    setArticles(prev => prev.filter(a => a.id !== article.id && a.slug !== article.slug));
+
     try {
-      const res = await fetch(`/api/admin/articles?id=${article.id}`, {
+      const res = await fetch(`/api/admin/articles?id=${encodeURIComponent(article.id)}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -120,9 +125,11 @@ function AdminArticlesContent() {
         fetchArticles();
       } else {
         alert(data.error || 'Không thể xóa bài viết.');
+        fetchArticles();
       }
     } catch {
       alert('Lỗi kết nối máy chủ.');
+      fetchArticles();
     }
   };
 
@@ -188,7 +195,7 @@ function AdminArticlesContent() {
       </div>
 
       {/* 2. STATS PILLS (BẤM ĐỂ LỌC TRẠNG THÁI NHANH) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <button
           onClick={() => setSelectedStatus('all')}
           className={`p-3 rounded-xl border text-left transition-all ${
@@ -224,9 +231,23 @@ function AdminArticlesContent() {
           }`}
         >
           <div className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" /> Chờ duyệt (Hàng đợi)
+            <Clock className="w-3.5 h-3.5" /> Chờ duyệt
           </div>
           <div className="text-xl font-black text-amber-700 mt-0.5">{stats.pending}</div>
+        </button>
+
+        <button
+          onClick={() => setSelectedStatus('draft')}
+          className={`p-3 rounded-xl border text-left transition-all ${
+            selectedStatus === 'draft' 
+              ? 'bg-gray-100 border-gray-400 ring-2 ring-gray-500/20' 
+              : 'bg-white border-gray-200 hover:bg-gray-50'
+          }`}
+        >
+          <div className="text-[11px] text-gray-600 font-semibold flex items-center gap-1">
+            <FileText className="w-3.5 h-3.5" /> Bản nháp
+          </div>
+          <div className="text-xl font-black text-gray-700 mt-0.5">{stats.draft}</div>
         </button>
 
         <button
@@ -261,15 +282,28 @@ function AdminArticlesContent() {
         </form>
 
         <div className="flex flex-wrap gap-2">
+          {/* Lọc trạng thái bài viết */}
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
+          >
+            <option value="all">Tất cả trạng thái</option>
+            <option value="published">Đã xuất bản</option>
+            <option value="pending_review">Chờ duyệt (Hàng đợi)</option>
+            <option value="draft">Bản nháp</option>
+            <option value="changes_requested">Yêu cầu sửa</option>
+          </select>
+
           {/* Lọc chuyên mục */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
+            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
           >
-            <option value="all">Tất cả chuyên mục</option>
+            <option value="all">Tất cả chuyên mục (Đầy đủ)</option>
             {MOCK_CATEGORIES.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat.id} value={cat.slug}>
                 {cat.name}
               </option>
             ))}
@@ -279,7 +313,7 @@ function AdminArticlesContent() {
           <select
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
+            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D71920]"
           >
             <option value="all">Tất cả nguồn</option>
             <option value="ai">⚡ AI Crawler tự động</option>

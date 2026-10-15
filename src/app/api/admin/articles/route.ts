@@ -5,7 +5,8 @@ import {
   saveArticleToDisk, 
   updateArticleInStore, 
   deleteArticleFromStore,
-  getStoredArticles
+  getStoredArticles,
+  markArticleDeleted
 } from '@/lib/data/article-store';
 import { MOCK_CATEGORIES, MOCK_AUTHORS } from '@/lib/data/mock-data';
 import { Article, ArticleStatus } from '@/types/database';
@@ -41,13 +42,15 @@ export async function GET(request: NextRequest) {
       articles = articles.filter(a => a.status === status);
     }
 
-    // 2. Lọc theo chuyên mục (theo id hoặc slug)
+    // 2. Lọc theo chuyên mục (theo id, slug hoặc tên)
     if (category !== 'all') {
-      articles = articles.filter(a => 
-        a.primary_category_id === category || 
-        a.category?.slug === category ||
-        a.category?.id === category
-      );
+      const catLower = category.toLowerCase().trim();
+      articles = articles.filter(a => {
+        const catId = (a.primary_category_id || '').toLowerCase().trim();
+        const catSlug = (a.category?.slug || '').toLowerCase().trim();
+        const catName = (a.category?.name || '').toLowerCase().trim();
+        return catId === catLower || catSlug === catLower || catName === catLower;
+      });
     }
 
     // 3. Lọc theo tag
@@ -301,24 +304,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Thiếu ID bài viết để xóa.' }, { status: 400 });
     }
 
-    // Nếu bài viết trong store, xóa khỏi store
-    deleteArticleFromStore(id);
-
-    // Để đảm bảo xóa hoàn toàn ngay cả bài thuộc mock data, ta đánh dấu status = 'archived' hoặc loại bỏ
-    const stored = getStoredArticles();
-    const isStillInCombined = getAllCombinedArticles().some(a => a.id === id);
-    if (isStillInCombined) {
-      // Lưu một bản ghi đánh dấu đã xóa (soft-delete)
-      const all = getAllCombinedArticles();
-      const target = all.find(a => a.id === id);
-      if (target) {
-        saveArticleToDisk({
-          ...target,
-          status: 'archived',
-          deleted_at: new Date().toISOString()
-        });
-      }
-    }
+    // Đánh dấu xóa triệt để khỏi hệ thống (xóa store và đưa vào blacklist vĩnh viễn)
+    markArticleDeleted(id);
 
     try {
       revalidatePath('/', 'page');

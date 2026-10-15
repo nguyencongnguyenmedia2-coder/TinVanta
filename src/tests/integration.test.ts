@@ -64,3 +64,52 @@ describe('9. Lọc bài viết theo Tác giả (Author Filtering)', () => {
     expect(res.articles[0].author?.slug).toBe('le-thanh-mai');
   });
 });
+
+describe('10. Quản trị CMS: Xóa bài viết và Bộ lọc Chuyên mục/Trạng thái', () => {
+  it('Xóa bài viết vĩnh viễn và không xuất hiện trong danh sách hiển thị', async () => {
+    const { saveArticleToDisk, getAllCombinedArticles, markArticleDeleted } = await import('@/lib/data/article-store');
+    
+    // Tạo bài viết thử nghiệm
+    const testArticle: any = {
+      id: `test-del-${Date.now()}`,
+      title: 'Bài viết test chức năng xóa',
+      slug: `bai-viet-test-xoa-${Date.now()}`,
+      sapo: 'Sapo test bài viết xóa',
+      status: 'published',
+      created_at: new Date().toISOString(),
+      published_at: new Date().toISOString()
+    };
+    saveArticleToDisk(testArticle);
+
+    // Kiểm tra đã có trong danh sách
+    const before = getAllCombinedArticles();
+    expect(before.some(a => a.id === testArticle.id)).toBe(true);
+
+    // Thực hiện xóa
+    markArticleDeleted(testArticle.id);
+
+    // Kiểm tra bài viết đã biến mất hoàn toàn
+    const after = getAllCombinedArticles();
+    expect(after.some(a => a.id === testArticle.id || a.slug === testArticle.slug)).toBe(false);
+  });
+
+  it('Hệ thống có đầy đủ chuyên mục trang web khớp với Menu', async () => {
+    const { MOCK_CATEGORIES } = await import('@/lib/data/mock-data');
+    const slugs = MOCK_CATEGORIES.map(c => c.slug);
+    
+    expect(slugs).toContain('thoi-su');
+    expect(slugs).toContain('kinh-te');
+    expect(slugs).toContain('cong-nghe');
+    expect(slugs).toContain('xa-hoi');
+    expect(slugs).toContain('phap-luat');
+    expect(slugs).toContain('giao-duc');
+    expect(slugs).toContain('suc-khoe');
+    expect(slugs).toContain('the-thao');
+    expect(slugs).toContain('xe');
+    expect(slugs).toContain('giai-tri');
+    expect(slugs).toContain('bat-dong-san');
+    expect(slugs).toContain('the-gioi');
+    expect(slugs).toContain('du-lich');
+  });
+});
+
